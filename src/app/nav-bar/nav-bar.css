@@ -1,0 +1,41 @@
+:host {
+  display: block;
+}
+
+.side-nav {
+  border: 1px solid #8a745f;
+  border-radius: 14px;
+  background: linear-gradient(165deg, #3a342f, #302b27);
+  padding: 0.75rem;
+  box-shadow:
+    inset 0 0 0 1px rgba(247, 235, 221, 0.14),
+    0 8px 22px rgba(0, 0, 0, 0.24);
+}
+
+.nav-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.nav-link {
+  width: 100%;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: #d8c2ab;
+  padding: 0.65rem 0.75rem;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
+.nav-link.is-active {
+  background: #4f4135;
+  border-color: #ad896a;
+  color: #fff3e6;
+  font-weight: 600;
+}
