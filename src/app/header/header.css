@@ -1,0 +1,58 @@
+:host {
+  display: block;
+  padding: 1rem;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.admin-header {
+  border-radius: 14px;
+  border: 1px solid #d8e0f2;
+  background: #f8fbff;
+  padding: 1rem 1.2rem;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.brand-mark {
+  position: relative;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 10px;
+  background: linear-gradient(145deg, #6f92ff, #4e74e8);
+}
+
+.brand-mark span {
+  position: absolute;
+  border-radius: 8px;
+}
+
+.brand-mark span:first-child {
+  inset: 6px;
+  border: 2px solid #ffffff;
+}
+
+.brand-mark span:last-child {
+  top: 8px;
+  right: 8px;
+  width: 10px;
+  height: 10px;
+  background: #1a315f;
+}
+
+.kicker {
+  margin: 0;
+  color: #5b709d;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.brand-text h1 {
+  margin: 0.12rem 0 0;
+  color: #12274d;
+  font-size: 1.15rem;
+}
