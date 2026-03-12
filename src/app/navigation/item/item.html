@@ -1,0 +1,9 @@
+<button
+  class="item-button"
+  type="button"
+  [class.is-active]="active"
+  [class.is-muted]="muted && !active"
+  [attr.aria-current]="active ? 'page' : null"
+>
+  {{ label }}
+</button>
