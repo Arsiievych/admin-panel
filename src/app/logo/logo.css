@@ -15,9 +15,21 @@
 }
 
 .brand-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1em;
+    height: 1em;
     font-size: 1rem;
     line-height: 1;
+    transform: translateY(0.04em);
     filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.45));
+}
+
+.brand-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .kicker {
@@ -31,7 +43,7 @@
 }
 
 .brand-text h1 {
-    margin: 0.5rem 0 0;
+    margin: 0.58rem 0 0;
     color: #dce7f1;
     font-size: 1.4rem;
     font-weight: 600;
@@ -60,7 +72,7 @@
 
     .brand-text h1 {
         font-size: 1.25rem;
-        margin-top: 0.35rem;
+        margin-top: 0.44rem;
     }
 }
 
@@ -86,7 +98,7 @@
 
     .brand-text h1 {
         font-size: 1rem;
-        margin-top: 0.2rem;
+        margin-top: 0.3rem;
         line-height: 1.15;
     }
 }
