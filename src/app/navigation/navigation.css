@@ -30,10 +30,10 @@
 .navigation-title {
   margin: 0;
   padding-inline-start: var(--nav-content-inline);
-  color: #667483;
-  font-size: 0.78rem;
+  color: #979da6;
+  font-size: 0.8rem;
   font-weight: 500;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
 }
 
