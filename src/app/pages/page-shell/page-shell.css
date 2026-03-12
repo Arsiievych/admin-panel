@@ -1,0 +1,73 @@
+:host {
+  display: block;
+  min-width: 0;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.page-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  min-height: var(--content-min-height);
+  padding: 1.15rem;
+  border: 1px solid rgba(104, 132, 170, 0.26);
+  background:
+    radial-gradient(circle at 50% -25%, rgba(64, 180, 255, 0.1), transparent 45%),
+    linear-gradient(180deg, rgba(27, 40, 63, 0.82), rgba(16, 26, 46, 0.88));
+  box-sizing: border-box;
+}
+
+.page-shell-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 3rem;
+}
+
+.page-shell-title {
+  margin: 0;
+  color: #e2ebf4;
+  font-size: 1.8rem;
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.page-shell-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-height: 2.5rem;
+}
+
+.page-shell-content {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (max-width: 900px) {
+  .page-shell {
+    min-height: auto;
+    border-radius: 1.25rem;
+    padding: 1rem;
+  }
+
+  .page-shell-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+
+  .page-shell-title {
+    font-size: 1.6rem;
+  }
+
+  .page-shell-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}

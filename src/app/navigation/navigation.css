@@ -5,11 +5,11 @@
 
 .navigation-shell {
   position: relative;
-  --nav-content-inline: 1.2rem;
+  --nav-content-inline: 1rem;
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-  min-height: calc(100vh - 5.5rem);
+  min-height: var(--content-min-height);
   padding: 1.1rem 1.3rem 1.3rem;
   border-right: 1px solid rgba(134, 168, 209, 0.18);
   background:

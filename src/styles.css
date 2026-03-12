@@ -1,5 +1,6 @@
 :root {
   --nav-width: 220px;
+  --content-min-height: calc(100vh - 5.5rem);
 
   --bg-page: #0b1220;
   --bg-sidebar: #0f172a;
