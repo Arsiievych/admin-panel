@@ -1,0 +1,81 @@
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.brand-mark {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 1rem;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(160deg, #11466b, #0e2d4a);
+    box-shadow: 0 10px 30px rgba(15, 107, 157, 0.4);
+}
+
+.brand-icon {
+    font-size: 1rem;
+    line-height: 1;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.45));
+}
+
+.kicker {
+    margin: 0;
+    color: #33d4ff;
+    font-size: 0.8rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 500;
+    line-height: 1;
+}
+
+.brand-text h1 {
+    margin: 0.5rem 0 0;
+    color: #dce7f1;
+    font-size: 1.4rem;
+    font-weight: 600;
+    line-height: 1;
+}
+
+@media (max-width: 980px) {
+    .brand-mark {
+        width: 3.6rem;
+        height: 4.6rem;
+        border-radius: 1.4rem;
+    }
+
+    .brand-icon {
+        font-size: 1.8rem;
+    }
+
+    .kicker {
+        font-size: 1.15rem;
+        letter-spacing: 0.2em;
+    }
+
+    .brand-text h1 {
+        font-size: 2rem;
+        margin-top: 0.5rem;
+    }
+}
+
+@media (max-width: 700px) {
+    .brand {
+        gap: 1rem;
+    }
+
+    .brand-mark {
+        width: 3.8rem;
+        height: 3.8rem;
+    }
+
+    .kicker {
+        font-size: 0.85rem;
+        letter-spacing: 0.14em;
+    }
+
+    .brand-text h1 {
+        font-size: 1.45rem;
+    }
+}

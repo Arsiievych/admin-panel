@@ -1,6 +1,25 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  --bg-page: #0b1220;
+  --bg-sidebar: #0f172a;
+  --bg-surface: #111827;
+  --bg-surface-soft: #1f2937;
+
+  --border-default: rgba(255,255,255,0.06);
+
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+
+  --accent: #22d3ee;
+  --accent-hover: #06b6d4;
+
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+}
 
 html,
 body {
-  background-color: #0D1115FF ;
+  background-color: var(--bg-page);
+  margin: 0;
+  padding: 0;
 }
