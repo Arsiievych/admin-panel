@@ -5,13 +5,10 @@
 }
 
 .admin-header {
-  border-radius: 14px;
-  border: 1px solid #8a745f;
-  background: linear-gradient(155deg, #3a342f, #312c28);
+  border-radius: 23px;
+  border: 1px solid rgba(93, 75, 225, 0.75);
+  background: linear-gradient(145deg, #121e29, #0f1822);
   padding: 1rem 1.2rem;
-  box-shadow:
-    inset 0 0 0 1px rgba(247, 235, 221, 0.2),
-    0 8px 22px rgba(0, 0, 0, 0.28);
 }
 
 .brand {
@@ -25,7 +22,7 @@
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 10px;
-  background: linear-gradient(145deg, #c58a3f, #965f2f);
+  background: linear-gradient(145deg, #5d4be1, rgba(13, 225, 192, 0.85));
 }
 
 .brand-mark span {
@@ -43,12 +40,12 @@
   right: 8px;
   width: 10px;
   height: 10px;
-  background: #4d2c1a;
+  background: #12191e;
 }
 
 .kicker {
   margin: 0;
-  color: #d2b79b;
+  color: #5d4be1;
   font-size: 0.7rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
