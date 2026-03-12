@@ -24,7 +24,7 @@
   pointer-events: none;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 980px) {
   .admin-header {
     padding: 0.9rem 0.9rem 0.85rem;
   }
