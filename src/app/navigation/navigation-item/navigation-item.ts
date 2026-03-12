@@ -1,12 +1,12 @@
 import { Component, Input } from '@angular/core';
 
 @Component({
-  selector: 'app-item',
+  selector: 'app-navigation-item',
   imports: [],
-  templateUrl: './item.html',
-  styleUrl: './item.css',
+  templateUrl: './navigation-item.html',
+  styleUrl: './navigation-item.css',
 })
-export class Item {
+export class NavigationItem {
   @Input() label = '';
   @Input() active = false;
   @Input() muted = false;

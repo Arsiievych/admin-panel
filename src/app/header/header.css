@@ -9,7 +9,9 @@
   isolation: isolate;
   border-top: 1px solid rgba(102, 133, 166, 0.24);
   border-bottom: 1px solid var(--border-default);
-  background: linear-gradient(135deg, #071022 0%, #020b1d 55%, #000816 100%);
+  background:
+    radial-gradient(circle at 0 50%, rgba(64, 180, 255, 0.08), transparent 75%),
+    linear-gradient(180deg, #081127 0%, #030b1d 58%, #020816 100%);
   padding: 1rem 1rem 1rem;
 }
 

@@ -1,14 +1,14 @@
 import {Component} from "@angular/core";
 import {Header} from "./header/header";
 import {Navigation} from "./navigation/navigation";
-import {Item} from "./navigation/item/item";
+import {NavigationItem} from "./navigation/navigation-item/navigation-item";
 
 @Component({
   selector: 'app-root',
   imports: [
     Header,
     Navigation,
-    Item,
+    NavigationItem,
   ],
   templateUrl: './app.html',
   styleUrl: './app.css'
