@@ -1,4 +1,6 @@
 :root {
+  --nav-width: 220px;
+
   --bg-page: #0b1220;
   --bg-sidebar: #0f172a;
   --bg-surface: #111827;

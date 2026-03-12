@@ -5,9 +5,8 @@
 
 .app-layout {
   display: grid;
-  grid-template-columns: 220px minmax(0, 1fr);
+  grid-template-columns: var(--nav-width) minmax(0, 1fr);
   gap: 1rem;
-  padding: 0 1rem 1rem;
   align-items: start;
 }
 
