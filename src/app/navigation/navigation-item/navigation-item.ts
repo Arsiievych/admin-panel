@@ -8,6 +8,11 @@ import { Component, Input } from '@angular/core';
 })
 export class NavigationItem {
   @Input() label = '';
+  @Input() icon = '';
   @Input() active = false;
   @Input() muted = false;
+
+  get iconClass(): string {
+    return `fi ${this.icon}`.trim();
+  }
 }

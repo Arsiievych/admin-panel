@@ -5,6 +5,9 @@
 
 .item-button {
   width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   border: 0;
   border-radius: 0.9rem;
   background: transparent;
@@ -17,6 +20,18 @@
   padding: 1rem var(--nav-content-inline, 2rem);
   cursor: pointer;
   transition: background-color 180ms ease, color 180ms ease, box-shadow 180ms ease;
+}
+
+.item-icon {
+  flex: 0 0 1.1rem;
+  width: 1.1rem;
+  text-align: center;
+  font-size: 0.95rem;
+  line-height: 0;
+}
+
+.item-label {
+  min-width: 0;
 }
 
 .item-button:hover {

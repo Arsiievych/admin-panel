@@ -5,5 +5,8 @@
   [class.is-muted]="muted && !active"
   [attr.aria-current]="active ? 'page' : null"
 >
-  {{ label }}
+  <span class="item-icon" aria-hidden="true">
+    <i [class]="iconClass"></i>
+  </span>
+  <span class="item-label">{{ label }}</span>
 </button>
