@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, output } from '@angular/core';
 
 @Component({
   selector: 'app-chat-toggle-button',
@@ -7,5 +7,5 @@ import { Component } from '@angular/core';
   styleUrl: './chat-toggle-button.css',
 })
 export class ChatToggleButton {
-
+  readonly open = output<void>();
 }
