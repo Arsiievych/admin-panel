@@ -12,6 +12,7 @@
     place-items: center;
     background: linear-gradient(160deg, #11466b, #0e2d4a);
     box-shadow: 0 0 30px rgba(15, 107, 157, 0.4);
+    border: 1px solid rgba(119, 162, 239, 0.26);
 }
 
 .brand-icon {
