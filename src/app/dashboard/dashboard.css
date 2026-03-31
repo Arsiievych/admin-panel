@@ -1,0 +1,9 @@
+:host {
+    display: block;
+}
+
+.page-lead {
+    margin: 0;
+    color: #8fa5bb;
+    font-size: 1rem;
+}

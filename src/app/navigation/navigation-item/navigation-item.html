@@ -1,9 +1,10 @@
 <button
   class="item-button"
   type="button"
-  [class.is-active]="active"
-  [class.is-muted]="muted && !active"
-  [attr.aria-current]="active ? 'page' : null"
+  [routerLink]=path
+  routerLinkActive="is-active"
+  [routerLinkActiveOptions]="{ exact: true }"
+  ariaCurrentWhenActive="page"
 >
   <span class="item-icon" aria-hidden="true">
     <i [class]="iconClass"></i>

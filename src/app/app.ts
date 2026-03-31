@@ -4,18 +4,20 @@ import { ChatToggleButton } from './chat/chat-toggle-button/chat-toggle-button';
 import { Header } from './header/header';
 import { Navigation } from './navigation/navigation';
 import { NavigationItem } from './navigation/navigation-item/navigation-item';
-import { PageShell } from './pages/page-shell/page-shell';
+import {RouterOutlet} from "@angular/router";
+import {PageShell} from "./pages/page-shell/page-shell";
 
 @Component({
   selector: 'app-root',
-  imports: [
-    AdminChatWidget,
-    Header,
-    Navigation,
-    NavigationItem,
-    PageShell,
-    ChatToggleButton,
-  ],
+    imports: [
+        AdminChatWidget,
+        Header,
+        Navigation,
+        NavigationItem,
+        ChatToggleButton,
+        RouterOutlet,
+        PageShell,
+    ],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })

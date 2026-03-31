@@ -1,18 +1,17 @@
-<app-header />
+<app-header/>
 <div class="app-layout">
-  <app-navigation>
-    <app-navigation-item navigation-item label="Dashboard" icon="fi-rr-dashboard" [active]="true" />
-    <app-navigation-item navigation-item label="Players" icon="fi-rr-users" />
-    <app-navigation-item navigation-item label="Settings" icon="fi-rr-settings" />
-  </app-navigation>
-
-  <app-page-shell title="Dashboard">
-    <p class="page-lead">Main content area for charts, reports, and widgets.</p>
-  </app-page-shell>
+    <app-navigation>
+        <app-navigation-item navigation-item label="Dashboard" icon="fi-rr-dashboard" [path]="['/dashboard']"/>
+        <app-navigation-item navigation-item label="Players" icon="fi-rr-users" [path]="['/players']"/>
+        <app-navigation-item navigation-item label="Settings" icon="fi-rr-settings" [path]="['/settings']"/>
+    </app-navigation>
+    <app-page-shell>
+        <router-outlet/>
+    </app-page-shell>
 </div>
 
 @if (isChatOpen) {
-  <app-admin-chat-widget (close)="closeChat()" />
+    <app-admin-chat-widget (close)="closeChat()"/>
 } @else {
-  <app-chat-toggle-button (open)="openChat()" />
+    <app-chat-toggle-button (open)="openChat()"/>
 }
