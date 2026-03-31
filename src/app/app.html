@@ -1,14 +1,1 @@
-<app-header/>
-<div class="app-layout">
-    <app-navigation/>
-
-    <app-page-shell>
-        <router-outlet/>
-    </app-page-shell>
-</div>
-
-@if (isChatOpen) {
-    <app-admin-chat-widget (close)="closeChat()"/>
-} @else {
-    <app-chat-toggle-button (open)="openChat()"/>
-}
+<router-outlet />
