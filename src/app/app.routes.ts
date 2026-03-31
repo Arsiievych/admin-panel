@@ -1,12 +1,14 @@
 import { Routes } from '@angular/router';
 import {Dashboard} from "./dashboard/dashboard";
+import {Players} from "./players/players";
+import {Settings} from "./settings/settings";
 
 export const routes: Routes = [
-    // {
-    //     path: '',
-    //     pathMatch: 'full',
-    //     redirectTo: 'dashboard',
-    // },
+    {
+        path: '',
+        pathMatch: 'full',
+        redirectTo: 'dashboard',
+    },
     {
         path: 'dashboard',
         pathMatch: 'full',
@@ -15,11 +17,11 @@ export const routes: Routes = [
     {
         path: 'players',
         pathMatch: 'full',
-        component: Dashboard,
+        component: Players,
     },
     {
         path: 'settings',
         pathMatch: 'full',
-        component: Dashboard,
+        component: Settings,
     }
 ];
