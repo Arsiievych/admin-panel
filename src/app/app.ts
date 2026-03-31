@@ -3,7 +3,6 @@ import { AdminChatWidget } from './chat/admin-chat-widget/admin-chat-widget';
 import { ChatToggleButton } from './chat/chat-toggle-button/chat-toggle-button';
 import { Header } from './header/header';
 import { Navigation } from './navigation/navigation';
-import { NavigationItem } from './navigation/navigation-item/navigation-item';
 import {RouterOutlet} from "@angular/router";
 import {PageShell} from "./pages/page-shell/page-shell";
 
@@ -13,7 +12,6 @@ import {PageShell} from "./pages/page-shell/page-shell";
         AdminChatWidget,
         Header,
         Navigation,
-        NavigationItem,
         ChatToggleButton,
         RouterOutlet,
         PageShell,
