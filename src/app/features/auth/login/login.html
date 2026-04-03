@@ -1,1 +1,37 @@
-<p>login works!</p>
+<main class="login-page">
+  <section class="login-card" aria-labelledby="login-title">
+    <div class="login-card-accent" aria-hidden="true"></div>
+
+    <div class="login-card-content">
+      <app-logo />
+
+      <form class="login-form" novalidate (submit)="$event.preventDefault()">
+        <label class="login-field">
+          <span class="login-field-label">Email</span>
+          <input
+            class="login-field-input"
+            type="email"
+            name="email"
+            autocomplete="email"
+            placeholder="name@company.com"
+            required
+          />
+        </label>
+
+        <label class="login-field">
+          <span class="login-field-label">Password</span>
+          <input
+            class="login-field-input"
+            type="password"
+            name="password"
+            autocomplete="current-password"
+            placeholder="Enter your password"
+            required
+          />
+        </label>
+
+        <button class="login-submit" type="submit">Login</button>
+      </form>
+    </div>
+  </section>
+</main>
