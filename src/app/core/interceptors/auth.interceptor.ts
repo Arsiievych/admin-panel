@@ -79,6 +79,6 @@ function isLoginRequest(request: HttpRequest<unknown>): boolean {
 }
 
 function logoutAndRedirect(authService: AuthService, router: Router): void {
-    authService.logout();
+    authService.clearSession();
     void router.navigate(['/login']);
 }

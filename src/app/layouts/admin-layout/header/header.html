@@ -1,4 +1,36 @@
 <header class="admin-header">
   <app-logo />
-  <app-current-user />
+
+  <div class="admin-header-actions">
+    <div class="admin-user-menu" (click)="$event.stopPropagation()">
+      <button
+        class="admin-user-menu-trigger"
+        type="button"
+        [attr.aria-expanded]="isUserMenuOpen()"
+        aria-haspopup="menu"
+        aria-controls="admin-user-menu"
+        (click)="toggleUserMenu($event)"
+      >
+        <app-current-user />
+      </button>
+
+      @if (isUserMenuOpen()) {
+        <div class="admin-user-menu-panel" id="admin-user-menu" role="menu">
+          <button class="admin-user-menu-item" type="button" role="menuitem" (click)="goToProfile()">
+            <span class="admin-user-menu-icon" aria-hidden="true">
+              <i class="fi fi-rr-user"></i>
+            </span>
+            <span>My profile</span>
+          </button>
+
+          <button class="admin-user-menu-item" type="button" role="menuitem" (click)="logout()">
+            <span class="admin-user-menu-icon" aria-hidden="true">
+              <i class="fi fi-rr-sign-out-alt"></i>
+            </span>
+            <span>Logout</span>
+          </button>
+        </div>
+      }
+    </div>
+  </div>
 </header>

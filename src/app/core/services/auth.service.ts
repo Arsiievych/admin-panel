@@ -1,5 +1,5 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { map, tap } from 'rxjs';
+import { finalize, map, tap } from 'rxjs';
 import {
     AuthSession,
     LoginRequest,
@@ -39,7 +39,13 @@ export class AuthService {
         );
     }
 
-    logout(): void {
+    logout() {
+        return this.api.post('auth/logout', {}).pipe(
+            finalize(() => this.clearSession()),
+        );
+    }
+
+    clearSession(): void {
         localStorage.removeItem(this.storageKey);
         this.sessionSignal.set(null);
     }
