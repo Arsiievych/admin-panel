@@ -1,24 +1,17 @@
-export interface User {
-    id: string;
-    email: string;
-    name: string;
-    role: string;
-}
-
 export interface LoginResponse {
     data: LoginData;
 }
 
-export interface LoginRequest{
+export interface LoginRequest {
     email: string;
     password: string;
 }
 
-export interface LoginData{
-    accessToken: string;
+export interface LoginData {
+    access_token: string;
     token_type: 'bearer' | string;
     expires_in: number;
-    user: User;
+    profile: UserProfile;
 }
 
 export interface RefreshResponse {
@@ -36,7 +29,7 @@ export interface AuthSession {
     tokenType: string;
     expiresIn: number;
     expiresAt: number;
-    profile: UserProfile | null;
+    profile: UserProfile;
 }
 
 export interface UserProfile {
