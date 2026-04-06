@@ -1,0 +1,136 @@
+<app-page-shell title="My profile">
+  <form class="profile-form" [formGroup]="form" (ngSubmit)="save()">
+    <div class="profile-toolbar">
+      <div class="profile-toolbar-copy">
+        <p class="profile-eyebrow">{{ isEditing() ? 'Editing mode' : 'Read-only' }}</p>
+        <p class="profile-copy">
+          {{ isEditing() ? 'Update account details, then save changes.' : 'Review your admin account details.' }}
+        </p>
+      </div>
+
+      <div class="profile-actions">
+        @if (isEditing()) {
+          <app-button variant="ghost" type="button" (pressed)="cancelEdit()">Cancel</app-button>
+          <app-button type="submit" [disabled]="isSaving()">
+            {{ isSaving() ? 'Saving...' : 'Save changes' }}
+          </app-button>
+        } @else {
+          <app-button variant="ghost" type="button" icon="fi fi-rr-edit" (pressed)="startEdit()">Edit profile</app-button>
+        }
+      </div>
+    </div>
+
+    @if (isLoading()) {
+      <p class="profile-message">Loading profile...</p>
+    }
+
+    @if (successMessage()) {
+      <p class="profile-alert profile-alert--success">{{ successMessage() }}</p>
+    }
+
+    @if (errorMessage()) {
+      <p class="profile-alert profile-alert--error">{{ errorMessage() }}</p>
+    }
+
+    <section class="profile-section" aria-labelledby="profile-account-title">
+      <div class="profile-section-header">
+        <h2 class="profile-section-title" id="profile-account-title">Account details</h2>
+        <p class="profile-section-copy">Name and email are shown across the admin panel.</p>
+      </div>
+      <div class="profile-grid">
+        <label class="profile-field">
+          <span class="profile-field-label">Name</span>
+          <input
+            class="profile-input"
+            [class.is-invalid]="form.controls.name.touched && form.controls.name.invalid"
+            [readonly]="!isEditing()"
+            type="text"
+            formControlName="name"
+            autocomplete="name"
+          />
+          @if (form.controls.name.touched && form.controls.name.hasError('required')) {
+            <span class="profile-field-error">Name is required.</span>
+          }
+          @if (form.controls.name.touched && form.controls.name.hasError('minlength')) {
+            <span class="profile-field-error">Name must be at least 3 characters.</span>
+          }
+          @if (form.controls.name.touched && form.controls.name.hasError('maxlength')) {
+            <span class="profile-field-error">Name must be 50 characters or fewer.</span>
+          }
+        </label>
+
+        <label class="profile-field">
+          <span class="profile-field-label">Email</span>
+          <input
+            class="profile-input"
+            [class.is-invalid]="form.controls.email.touched && form.controls.email.invalid"
+            [readonly]="!isEditing()"
+            type="email"
+            formControlName="email"
+            autocomplete="email"
+          />
+          @if (form.controls.email.touched && form.controls.email.hasError('required')) {
+            <span class="profile-field-error">Email is required.</span>
+          }
+          @if (form.controls.email.touched && form.controls.email.hasError('email')) {
+            <span class="profile-field-error">Enter a valid email address.</span>
+          }
+        </label>
+      </div>
+    </section>
+
+    @if (isEditing()) {
+      <section class="profile-section profile-section--password" aria-labelledby="profile-password-title">
+        <div class="profile-section-header">
+          <h2 class="profile-section-title" id="profile-password-title">Password</h2>
+          <p class="profile-section-copy">Leave these fields empty if you only want to update name or email.</p>
+        </div>
+
+        <div class="profile-grid profile-grid--password">
+          <label class="profile-field">
+            <span class="profile-field-label">Current password</span>
+            <input
+              class="profile-input"
+              [class.is-invalid]="form.touched && form.hasError('oldPasswordRequired')"
+              type="password"
+              formControlName="old_password"
+              autocomplete="current-password"
+            />
+          </label>
+
+          <label class="profile-field">
+            <span class="profile-field-label">New password</span>
+            <input
+              class="profile-input"
+              [class.is-invalid]="form.touched && form.hasError('newPasswordMinLength')"
+              type="password"
+              formControlName="new_password"
+              autocomplete="new-password"
+            />
+          </label>
+
+          <label class="profile-field">
+            <span class="profile-field-label">Confirm password</span>
+            <input
+              class="profile-input"
+              [class.is-invalid]="form.touched && form.hasError('passwordMismatch')"
+              type="password"
+              formControlName="confirm_password"
+              autocomplete="new-password"
+            />
+          </label>
+        </div>
+
+        @if (form.touched && form.hasError('oldPasswordRequired')) {
+          <p class="profile-field-error">Current password is required and must be at least 8 characters.</p>
+        }
+        @if (form.touched && form.hasError('newPasswordMinLength')) {
+          <p class="profile-field-error">New password must be at least 8 characters.</p>
+        }
+        @if (form.touched && form.hasError('passwordMismatch')) {
+          <p class="profile-field-error">Confirm password must match new password.</p>
+        }
+      </section>
+    }
+  </form>
+</app-page-shell>

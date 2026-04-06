@@ -1,10 +1,13 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { finalize, map, tap } from 'rxjs';
 import {
+    AdminProfileUpdateRequest,
     AuthSession,
     LoginRequest,
     LoginResponse,
     RefreshResponse,
+    UserProfile,
+    UserProfileResponse,
 } from '../models/auth.models';
 import { ApiService } from './api.service';
 
@@ -36,6 +39,20 @@ export class AuthService {
         return this.api.post<RefreshResponse>('auth/refresh', {}).pipe(
             map((response) => this.mapRefreshResponse(response)),
             tap((tokenData) => this.updateSessionTokens(tokenData)),
+        );
+    }
+
+    getCurrentProfile() {
+        return this.api.get<UserProfileResponse>('auth/me').pipe(
+            map((response) => response.data),
+            tap((profile) => this.updateSessionProfile(profile)),
+        );
+    }
+
+    updateProfile(payload: AdminProfileUpdateRequest) {
+        return this.api.put<UserProfileResponse>('auth/profile', payload).pipe(
+            map((response) => response.data),
+            tap((profile) => this.updateSessionProfile(profile)),
         );
     }
 
@@ -78,6 +95,19 @@ export class AuthService {
         };
 
         this.setSession(nextSession);
+    }
+
+    private updateSessionProfile(profile: UserProfile): void {
+        const currentSession = this.sessionSignal();
+
+        if (!currentSession) {
+            return;
+        }
+
+        this.setSession({
+            ...currentSession,
+            profile,
+        });
     }
 
     private readSession(): AuthSession | null {

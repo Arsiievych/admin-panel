@@ -32,6 +32,18 @@ export interface AuthSession {
     profile: UserProfile;
 }
 
+export interface UserProfileResponse {
+    data: UserProfile;
+}
+
+export interface AdminProfileUpdateRequest {
+    name?: string;
+    email?: string;
+    old_password?: string;
+    new_password?: string;
+    confirm_password?: string;
+}
+
 export interface UserProfile {
     id: number;
     nickname: string;
