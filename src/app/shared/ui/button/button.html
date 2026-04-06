@@ -1,0 +1,20 @@
+<button
+  class="button"
+  [class.button--primary]="variant() === 'primary'"
+  [class.button--ghost]="variant() === 'ghost'"
+  [class.button--full-width]="fullWidth()"
+  [type]="type()"
+  [disabled]="disabled()"
+  [attr.aria-label]="ariaLabel()"
+  (click)="pressed.emit($event)"
+>
+  @if (icon()) {
+    <span class="button-icon" aria-hidden="true">
+      <i [class]="icon()"></i>
+    </span>
+  }
+
+  <span class="button-label">
+    <ng-content></ng-content>
+  </span>
+</button>
