@@ -23,7 +23,7 @@ export class Login {
 
     readonly form = this.formBuilder.nonNullable.group({
         email: ['', [Validators.required, Validators.email]],
-        password: ['', [Validators.required]],
+        password: ['', [Validators.required, Validators.minLength(6)]],
     });
 
     submit(): void {

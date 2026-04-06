@@ -108,6 +108,23 @@
   box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.08);
 }
 
+.login-field-input.is-invalid {
+  border-color: rgba(239, 68, 68, 0.74);
+  background: rgba(42, 16, 24, 0.88);
+  box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.14);
+}
+
+.login-field-input.is-invalid:focus {
+  border-color: rgba(255, 155, 155, 0.86);
+  box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.22);
+}
+
+.login-field-error {
+  color: #ff9b9b;
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
 .login-submit {
   min-height: 3.25rem;
   padding: 0.85rem 1rem;
