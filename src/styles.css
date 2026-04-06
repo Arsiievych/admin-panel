@@ -33,4 +33,128 @@ body {
   margin: 0;
   color: #8fa5bb;
   font-size: 1rem;
+  line-height: 1.55;
+}
+
+.content-surface {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  border: 1px solid rgba(134, 168, 209, 0.14);
+  border-radius: 1.25rem;
+  background:
+    linear-gradient(180deg, rgba(17, 28, 49, 0.76), rgba(10, 18, 33, 0.9));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 24px 60px rgba(1, 8, 20, 0.16);
+}
+
+.content-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: clamp(1rem, 1.8vw, 1.35rem);
+}
+
+.content-section-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  min-width: 0;
+  padding-bottom: 0.95rem;
+  border-bottom: 1px solid rgba(134, 168, 209, 0.12);
+}
+
+.content-section-heading {
+  min-width: 0;
+}
+
+.content-section-title,
+.content-section-copy {
+  margin: 0;
+}
+
+.content-section-title {
+  color: var(--text-primary);
+  font-size: 1.05rem;
+  font-weight: 650;
+  line-height: 1.2;
+}
+
+.content-section-copy {
+  max-width: 48rem;
+  margin-top: 0.4rem;
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 1rem;
+  width: 100%;
+}
+
+.content-grid > * {
+  grid-column: span 12;
+  min-width: 0;
+}
+
+.content-empty-state {
+  min-height: 13rem;
+  display: grid;
+  place-items: center;
+  padding: clamp(1.4rem, 4vw, 3rem);
+  text-align: center;
+}
+
+.content-empty-state-inner {
+  max-width: 34rem;
+}
+
+.content-empty-state-title,
+.content-empty-state-copy {
+  margin: 0;
+}
+
+.content-empty-state-title {
+  color: var(--text-primary);
+  font-size: clamp(1.2rem, 2vw, 1.6rem);
+  font-weight: 650;
+  line-height: 1.15;
+}
+
+.content-empty-state-copy {
+  margin-top: 0.65rem;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.content-table-region {
+  width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+@media (min-width: 900px) {
+  .content-grid__span-4 {
+    grid-column: span 4;
+  }
+
+  .content-grid__span-6 {
+    grid-column: span 6;
+  }
+
+  .content-grid__span-8 {
+    grid-column: span 8;
+  }
+}
+
+@media (max-width: 700px) {
+  .content-section-header {
+    flex-direction: column;
+  }
 }

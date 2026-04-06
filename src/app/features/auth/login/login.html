@@ -1,12 +1,7 @@
 <main class="login-page">
     <section class="login-card" aria-labelledby="login-title">
-        <div class="login-card-accent" aria-hidden="true"></div>
-
         <div class="login-card-content">
             <app-logo/>
-
-            <h2 class="login-title" id="login-title">Login</h2>
-
             <form class="login-form" [formGroup]="form" (ngSubmit)="submit()">
                 <label class="login-field">
                     <span class="login-field-label">Email</span>
@@ -17,7 +12,7 @@
                             type="email"
                             name="email"
                             autocomplete="email"
-                            placeholder="name@company.com"
+                            placeholder="admin@example.com"
                             formControlName="email"
                             required
                     />
@@ -36,17 +31,22 @@
                             name="password"
                             autocomplete="current-password"
                             formControlName="password"
-                            placeholder="Enter your password"
+                            placeholder="••••••••••"
                             required
                     />
                     @if (form.controls.password.touched && form.controls.password.hasError('minlength')) {
                         <span class="login-field-error">Password must be at least 6 characters.</span>
                     }
                 </label>
+                <label class="login-remember">
+                    <input class="login-remember-input" type="checkbox" name="remember" />
+                    <span class="login-remember-box" aria-hidden="true"></span>
+                    <span class="login-remember-text">Remember User</span>
+                </label>
                 @if (errorMessage()) {
                     <p class="login-error">{{ errorMessage() }}</p>
                 }
-                <app-button type="submit" [disabled]="isSubmitting()" [fullWidth]="true">
+                <app-button class="login-submit" type="submit" [disabled]="isSubmitting()" [fullWidth]="true">
                     {{ isSubmitting() ? 'Logging in...' : 'Login' }}
                 </app-button>
             </form>

@@ -1,24 +1,20 @@
-<app-page-shell title="My profile">
-  <form class="profile-form" [formGroup]="form" (ngSubmit)="save()">
-    <div class="profile-toolbar">
-      <div class="profile-toolbar-copy">
-        <p class="profile-eyebrow">{{ isEditing() ? 'Editing mode' : 'Read-only' }}</p>
-        <p class="profile-copy">
-          {{ isEditing() ? 'Update account details, then save changes.' : 'Review your admin account details.' }}
-        </p>
-      </div>
+<app-page-shell
+  title="My profile"
+  description="Manage your admin account identity and password from one place."
+>
+  <div page-shell-actions class="profile-actions">
+    @if (isEditing()) {
+      <app-button variant="ghost" type="button" (pressed)="cancelEdit()">Cancel</app-button>
+      <app-button type="button" [disabled]="isSaving()" ariaLabel="Save profile changes" (pressed)="save()">
+        {{ isSaving() ? 'Saving...' : 'Save changes' }}
+      </app-button>
+    } @else {
+      <app-button variant="ghost" type="button" icon="fi fi-rr-edit" (pressed)="startEdit()">Edit profile</app-button>
+    }
+  </div>
 
-      <div class="profile-actions">
-        @if (isEditing()) {
-          <app-button variant="ghost" type="button" (pressed)="cancelEdit()">Cancel</app-button>
-          <app-button type="submit" [disabled]="isSaving()">
-            {{ isSaving() ? 'Saving...' : 'Save changes' }}
-          </app-button>
-        } @else {
-          <app-button variant="ghost" type="button" icon="fi fi-rr-edit" (pressed)="startEdit()">Edit profile</app-button>
-        }
-      </div>
-    </div>
+  <form class="profile-form content-surface content-section" [formGroup]="form" (ngSubmit)="save()">
+    <p class="profile-mode">{{ isEditing() ? 'Editing mode' : 'Read-only' }}</p>
 
     @if (isLoading()) {
       <p class="profile-message">Loading profile...</p>
