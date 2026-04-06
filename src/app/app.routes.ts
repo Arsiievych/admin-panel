@@ -1,4 +1,5 @@
 import {Routes} from '@angular/router';
+import { authGuard } from './core/guards/auth.guard';
 import {AdminLayout} from './layouts/admin-layout/admin-layout';
 
 export const routes: Routes = [
@@ -8,6 +9,7 @@ export const routes: Routes = [
     },
     {
         path: 'not-found',
+        canActivate: [authGuard],
         loadComponent: () => import('./features/not-found/not-found').then((m) => m.NotFound),
     },
     {
@@ -18,6 +20,7 @@ export const routes: Routes = [
     {
         path: '',
         component: AdminLayout,
+        canActivate: [authGuard],
         children: [
             {
                 path: '',
