@@ -9,29 +9,41 @@ type RequestOptions = {
   params?: HttpParams | Record<string, string | number | boolean>;
 };
 
+type HttpRequestOptions = Omit<RequestOptions, 'baseUrl'>;
+
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   private readonly http = inject(HttpClient);
   private readonly defaultBaseUrl = environment.api.baseUrl;
 
   get<T>(path: string, options?: RequestOptions): Observable<T> {
-    return this.http.get<T>(this.buildUrl(path, options?.baseUrl), options);
+    return this.http.get<T>(this.buildUrl(path, options?.baseUrl), this.getHttpOptions(options));
   }
 
   post<T>(path: string, body: unknown, options?: RequestOptions): Observable<T> {
-    return this.http.post<T>(this.buildUrl(path, options?.baseUrl), body, options);
+    return this.http.post<T>(this.buildUrl(path, options?.baseUrl), body, this.getHttpOptions(options));
   }
 
   put<T>(path: string, body: unknown, options?: RequestOptions): Observable<T> {
-    return this.http.put<T>(this.buildUrl(path, options?.baseUrl), body, options);
+    return this.http.put<T>(this.buildUrl(path, options?.baseUrl), body, this.getHttpOptions(options));
   }
 
   patch<T>(path: string, body: unknown, options?: RequestOptions): Observable<T> {
-    return this.http.patch<T>(this.buildUrl(path, options?.baseUrl), body, options);
+    return this.http.patch<T>(this.buildUrl(path, options?.baseUrl), body, this.getHttpOptions(options));
   }
 
   delete<T>(path: string, options?: RequestOptions): Observable<T> {
-    return this.http.delete<T>(this.buildUrl(path, options?.baseUrl), options);
+    return this.http.delete<T>(this.buildUrl(path, options?.baseUrl), this.getHttpOptions(options));
+  }
+
+  private getHttpOptions(options?: RequestOptions): HttpRequestOptions | undefined {
+    if (!options) {
+      return undefined;
+    }
+
+    const { baseUrl: _baseUrl, ...httpOptions } = options;
+
+    return httpOptions;
   }
 
   private buildUrl(path: string, baseUrl?: string): string {

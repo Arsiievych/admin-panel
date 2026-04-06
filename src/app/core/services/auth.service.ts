@@ -25,10 +25,10 @@ export class AuthService {
         return !!session?.accessToken && !this.isSessionExpired(session);
     });
 
-    login(payload: LoginRequest, saveData = true) {
+    login(payload: LoginRequest) {
         return this.api.post<LoginResponse>('auth/login', payload).pipe(
             map((response) => this.mapLoginResponse(response)),
-            tap((session) => this.setSession(session, saveData)),
+            tap((session) => this.setSession(session)),
         );
     }
 
@@ -41,7 +41,6 @@ export class AuthService {
 
     logout(): void {
         localStorage.removeItem(this.storageKey);
-        sessionStorage.removeItem(this.storageKey);
         this.sessionSignal.set(null);
     }
 
@@ -55,12 +54,8 @@ export class AuthService {
         return !session || this.isSessionExpired(session);
     }
 
-    private setSession(session: AuthSession, saveData: boolean): void {
-        const storage = saveData ? localStorage : sessionStorage;
-
-        localStorage.removeItem(this.storageKey);
-        sessionStorage.removeItem(this.storageKey);
-        storage.setItem(this.storageKey, JSON.stringify(session));
+    private setSession(session: AuthSession): void {
+        localStorage.setItem(this.storageKey, JSON.stringify(session));
         this.sessionSignal.set(session);
     }
 
@@ -76,11 +71,11 @@ export class AuthService {
             ...tokenData,
         };
 
-        this.setSession(nextSession, this.getSessionStorage() === localStorage);
+        this.setSession(nextSession);
     }
 
     private readSession(): AuthSession | null {
-        const rawSession = localStorage.getItem(this.storageKey) ?? sessionStorage.getItem(this.storageKey);
+        const rawSession = localStorage.getItem(this.storageKey);
 
         if (!rawSession) {
             return null;
@@ -90,22 +85,9 @@ export class AuthService {
             return JSON.parse(rawSession) as AuthSession;
         } catch {
             localStorage.removeItem(this.storageKey);
-            sessionStorage.removeItem(this.storageKey);
 
             return null;
         }
-    }
-
-    private getSessionStorage(): Storage | null {
-        if (localStorage.getItem(this.storageKey)) {
-            return localStorage;
-        }
-
-        if (sessionStorage.getItem(this.storageKey)) {
-            return sessionStorage;
-        }
-
-        return null;
     }
 
     private mapLoginResponse(response: LoginResponse): AuthSession {

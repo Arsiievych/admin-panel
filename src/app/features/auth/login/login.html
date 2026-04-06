@@ -1,37 +1,46 @@
 <main class="login-page">
-  <section class="login-card" aria-labelledby="login-title">
-    <div class="login-card-accent" aria-hidden="true"></div>
+    <section class="login-card" aria-labelledby="login-title">
+        <div class="login-card-accent" aria-hidden="true"></div>
 
-    <div class="login-card-content">
-      <app-logo />
+        <div class="login-card-content">
+            <app-logo/>
 
-      <form class="login-form" novalidate (submit)="$event.preventDefault()">
-        <label class="login-field">
-          <span class="login-field-label">Email</span>
-          <input
-            class="login-field-input"
-            type="email"
-            name="email"
-            autocomplete="email"
-            placeholder="name@company.com"
-            required
-          />
-        </label>
+            <h2 class="login-title" id="login-title">Login</h2>
 
-        <label class="login-field">
-          <span class="login-field-label">Password</span>
-          <input
-            class="login-field-input"
-            type="password"
-            name="password"
-            autocomplete="current-password"
-            placeholder="Enter your password"
-            required
-          />
-        </label>
+            <form class="login-form" [formGroup]="form" (ngSubmit)="submit()">
+                <label class="login-field">
+                    <span class="login-field-label">Email</span>
+                    <input
+                            class="login-field-input"
+                            type="email"
+                            name="email"
+                            autocomplete="email"
+                            placeholder="name@company.com"
+                            formControlName="email"
+                            required
+                    />
+                </label>
 
-        <button class="login-submit" type="submit">Login</button>
-      </form>
-    </div>
-  </section>
+                <label class="login-field">
+                    <span class="login-field-label">Password</span>
+                    <input
+                            class="login-field-input"
+                            type="password"
+                            name="password"
+                            autocomplete="current-password"
+                            formControlName="password"
+                            placeholder="Enter your password"
+                            required
+                    />
+                </label>
+
+                <button class="login-submit" type="submit" [disabled]="isSubmitting()">
+                    {{ isSubmitting() ? 'Logging in...' : 'Login' }}
+                </button>
+                @if (errorMessage()) {
+                    <p class="login-error">{{ errorMessage() }}</p>
+                }
+            </form>
+        </div>
+    </section>
 </main>
