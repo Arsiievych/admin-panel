@@ -1,24 +1,26 @@
 :host {
   display: block;
   font-family: 'Segoe UI', sans-serif;
+  width: 16rem;
 }
 
 .current-user {
   display: inline-flex;
   align-items: center;
-  gap: 0.75rem;
-  max-width: min(100%, 24rem);
+  gap: 0.72rem;
+  width: 100%;
   min-width: 0;
-  padding: 0.5rem 0.85rem;
-  border: 1px solid rgba(117, 145, 177, 0.28);
-  border-radius: 1.2rem;
+  box-sizing: border-box;
+  padding: 0.42rem 0.62rem 0.42rem 0.42rem;
+  border: 1px solid rgba(145, 202, 229, 0.24);
+  border-radius: 0.95rem;
   background:
-    radial-gradient(circle at 0 50%, rgba(34, 211, 238, 0.11), transparent 68%),
-    linear-gradient(180deg, rgba(17, 26, 46, 0.94), rgba(8, 16, 31, 0.95));
+    radial-gradient(circle at 0 50%, rgba(83, 221, 255, 0.12), transparent 68%),
+    linear-gradient(180deg, rgba(28, 47, 75, 0.74), rgba(11, 22, 39, 0.88));
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.04),
-    0 16px 36px rgba(1, 9, 22, 0.28);
-  backdrop-filter: blur(12px);
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 14px 34px rgba(1, 9, 22, 0.24);
+  backdrop-filter: blur(14px);
   transition:
     border-color 180ms ease,
     background 180ms ease,
@@ -26,18 +28,29 @@
     transform 180ms ease;
 }
 
+.current-user::after {
+  flex: 0 0 auto;
+  margin-left: auto;
+  width: 0.42rem;
+  height: 0.42rem;
+  border-right: 1.5px solid rgba(211, 225, 239, 0.78);
+  border-bottom: 1.5px solid rgba(211, 225, 239, 0.78);
+  content: '';
+  transform: rotate(45deg) translateY(-0.12rem);
+}
+
 .current-user-avatar {
-  flex: 0 0 2.5rem;
-  width: 2.5rem;
-  height: 2.5rem;
+  flex: 0 0 2.45rem;
+  width: 2.45rem;
+  height: 2.45rem;
   display: grid;
   place-items: center;
   border: 1px solid rgba(86, 149, 194, 0.22);
-  border-radius: 0.85rem;
-  background: linear-gradient(160deg, #11466b, #0d2f4d);
-  color: #53ddff;
-  font-size: 0.95rem;
-  font-weight: 500;
+  border-radius: 0.72rem;
+  background: linear-gradient(160deg, rgba(83, 221, 255, 0.3), rgba(25, 69, 106, 0.82));
+  color: #bdf7ff;
+  font-size: 0.86rem;
+  font-weight: 700;
   letter-spacing: 0.03em;
   overflow: hidden;
   text-transform: uppercase;
@@ -50,7 +63,7 @@
 }
 
 .current-user-details {
-  max-width: 16rem;
+  flex: 1 1 auto;
   min-width: 0;
   display: flex;
   flex-direction: column;
@@ -67,9 +80,9 @@
 .current-user-name {
   max-width: 100%;
   overflow: hidden;
-  color: var(--text-primary);
-  font-size: 0.88rem;
-  font-weight: 600;
+  color: #eef7fd;
+  font-size: 0.9rem;
+  font-weight: 650;
   line-height: 1.1;
   letter-spacing: 0.01em;
   text-overflow: ellipsis;
@@ -78,29 +91,25 @@
 }
 
 .current-user-role {
-  color: #95a9c0;
+  overflow: hidden;
+  color: rgba(189, 247, 255, 0.7);
   font-size: 0.72rem;
   line-height: 1;
+  text-overflow: ellipsis;
   transition: color 180ms ease;
+  white-space: nowrap;
 }
 
 .current-user-email {
-  max-width: 100%;
-  overflow: hidden;
-  color: #71869d;
-  font-size: 0.68rem;
-  line-height: 1;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  transition: color 180ms ease;
+  display: none;
 }
 
 @media (hover: hover) {
   .current-user:hover {
-    border-color: rgba(83, 221, 255, 0.42);
+    border-color: rgba(83, 221, 255, 0.5);
     background:
-      radial-gradient(circle at 0 50%, rgba(34, 211, 238, 0.16), transparent 68%),
-      linear-gradient(180deg, rgba(20, 31, 55, 0.96), rgba(10, 19, 36, 0.97));
+      radial-gradient(circle at 0 50%, rgba(83, 221, 255, 0.2), transparent 68%),
+      linear-gradient(180deg, rgba(32, 55, 86, 0.82), rgba(12, 24, 42, 0.92));
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.06),
       0 18px 38px rgba(1, 9, 22, 0.34),
@@ -110,8 +119,8 @@
 
   .current-user:hover .current-user-avatar {
     border-color: rgba(83, 221, 255, 0.34);
-    background: linear-gradient(160deg, #14537d, #103556);
-    color: #7fe8ff;
+    background: linear-gradient(160deg, rgba(106, 238, 242, 0.42), rgba(29, 86, 128, 0.9));
+    color: #eafcff;
     box-shadow: 0 0 30px rgba(15, 107, 157, 0.3);
   }
 
@@ -131,16 +140,15 @@
 @media (max-width: 700px) {
   .current-user {
     gap: 0.65rem;
-    max-width: 100%;
     padding: 0.45rem 0.75rem;
-    border-radius: 1rem;
+    border-radius: 0.9rem;
   }
 
   .current-user-avatar {
     flex-basis: 2.2rem;
     width: 2.2rem;
     height: 2.2rem;
-    border-radius: 0.75rem;
+    border-radius: 0.65rem;
     font-size: 0.82rem;
   }
 

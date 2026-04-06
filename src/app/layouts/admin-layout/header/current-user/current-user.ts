@@ -9,12 +9,21 @@ import { AuthService } from '../../../../core/services/auth.service';
 })
 export class CurrentUser {
   private readonly authService = inject(AuthService);
+  private readonly maxDisplayNameLength = 20;
 
   readonly profile = this.authService.profile;
-  readonly displayName = computed(() => this.profile()?.nickname || this.profile()?.email || 'Admin');
+  readonly displayName = computed(() => this.truncateName(this.profile()?.nickname || this.profile()?.email || 'Admin'));
   readonly email = computed(() => this.profile()?.email ?? 'No email');
   readonly roleLabel = computed(() => this.getRoleLabel(this.profile()?.role));
   readonly initials = computed(() => this.getInitials(this.displayName()));
+
+  private truncateName(value: string): string {
+    if (value.length <= this.maxDisplayNameLength) {
+      return value;
+    }
+
+    return `${value.slice(0, this.maxDisplayNameLength - 3)}...`;
+  }
 
   private getRoleLabel(role?: number): string {
     switch (role) {

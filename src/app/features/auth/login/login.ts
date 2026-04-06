@@ -2,13 +2,11 @@ import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
-import { Button } from '../../../shared/ui/button/button';
 import { Logo } from '../../../shared/ui/logo/logo';
 
 @Component({
     selector: 'app-login',
     imports: [
-        Button,
         Logo,
         ReactiveFormsModule,
     ],

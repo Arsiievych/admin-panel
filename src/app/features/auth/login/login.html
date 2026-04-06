@@ -46,9 +46,9 @@
                 @if (errorMessage()) {
                     <p class="login-error">{{ errorMessage() }}</p>
                 }
-                <app-button class="login-submit" type="submit" [disabled]="isSubmitting()" [fullWidth]="true">
+                <button class="login-submit" type="submit" [disabled]="isSubmitting()">
                     {{ isSubmitting() ? 'Logging in...' : 'Login' }}
-                </app-button>
+                </button>
             </form>
         </div>
     </section>

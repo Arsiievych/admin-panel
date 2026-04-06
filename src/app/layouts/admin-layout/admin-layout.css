@@ -1,14 +1,32 @@
 :host {
   display: block;
-  min-height: 100vh;
-  background: var(--bg-page);
+  min-height: 100svh;
+  color: #eaf7ff;
+  background:
+    radial-gradient(circle at 30% 18%, rgba(83, 221, 255, 0.16), transparent 18rem),
+    linear-gradient(145deg, #111d31 0%, #132037 48%, #0c1729 100%);
+  isolation: isolate;
 }
 
 .admin-layout {
+  position: relative;
   display: grid;
   grid-template-columns: var(--nav-width) minmax(0, 1fr);
   align-items: stretch;
   min-height: var(--content-min-height);
+  overflow: hidden;
+}
+
+.admin-layout::before {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  content: '';
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(180, 230, 255, 0.035) 1px, transparent 1px) 0 0 / 4.5rem 4.5rem,
+    linear-gradient(180deg, rgba(180, 230, 255, 0.028) 1px, transparent 1px) 0 0 / 4.5rem 4.5rem,
+    radial-gradient(ellipse at center, transparent 0%, rgba(3, 8, 19, 0.54) 100%);
 }
 
 .admin-layout-content {
