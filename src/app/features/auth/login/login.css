@@ -173,7 +173,11 @@
 
 .login-error {
   margin: 0;
-  color: #ff9b9b;
+  padding: 0.85rem 0.95rem;
+  border: 1px solid rgba(239, 68, 68, 0.46);
+  border-radius: 0.9rem;
+  background: rgba(239, 68, 68, 0.14);
+  color: #ffb4b4;
   font-size: 0.88rem;
   line-height: 1.4;
 }

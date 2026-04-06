@@ -43,13 +43,12 @@
                         <span class="login-field-error">Password must be at least 6 characters.</span>
                     }
                 </label>
-
-                <button class="login-submit" type="submit" [disabled]="isSubmitting()">
-                    {{ isSubmitting() ? 'Logging in...' : 'Login' }}
-                </button>
                 @if (errorMessage()) {
                     <p class="login-error">{{ errorMessage() }}</p>
                 }
+                <button class="login-submit" type="submit" [disabled]="isSubmitting()">
+                    {{ isSubmitting() ? 'Logging in...' : 'Login' }}
+                </button>
             </form>
         </div>
     </section>
