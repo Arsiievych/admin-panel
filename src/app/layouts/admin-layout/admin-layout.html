@@ -1,7 +1,9 @@
 <app-header />
 <div class="admin-layout">
   <app-navigation />
-  <router-outlet />
+  <main class="admin-layout-content">
+    <router-outlet />
+  </main>
 </div>
 
 @if (isChatOpen) {
