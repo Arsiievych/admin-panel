@@ -32,12 +32,14 @@ export class CurrentUser {
   }
 
   private getInitials(value: string): string {
-    return value
+    const initials = value
       .split(/\s+/)
       .filter(Boolean)
       .slice(0, 2)
       .map((part) => part[0])
       .join('')
       .toUpperCase();
+
+    return initials.slice(0, 2) || 'A';
   }
 }
