@@ -55,7 +55,8 @@
 }
 
 .current-user-name,
-.current-user-role {
+.current-user-role,
+.current-user-email {
   margin: 0;
 }
 
@@ -72,6 +73,17 @@
   color: #95a9c0;
   font-size: 0.72rem;
   line-height: 1;
+  transition: color 180ms ease;
+}
+
+.current-user-email {
+  max-width: 12rem;
+  overflow: hidden;
+  color: #71869d;
+  font-size: 0.68rem;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   transition: color 180ms ease;
 }
 
@@ -102,6 +114,10 @@
   .current-user:hover .current-user-role {
     color: #b7c8d9;
   }
+
+  .current-user:hover .current-user-email {
+    color: #96aabe;
+  }
 }
 
 @media (max-width: 700px) {
@@ -125,5 +141,10 @@
 
   .current-user-role {
     font-size: 0.68rem;
+  }
+
+  .current-user-email {
+    max-width: 10rem;
+    font-size: 0.64rem;
   }
 }
