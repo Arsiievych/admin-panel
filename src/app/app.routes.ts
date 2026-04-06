@@ -7,6 +7,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/auth/login/login').then((m) => m.Login),
     },
     {
+        path: 'not-found',
+        loadComponent: () => import('./features/not-found/not-found').then((m) => m.NotFound),
+    },
+    {
         path: 'dashboard',
         redirectTo: '',
         pathMatch: 'full',
@@ -33,5 +37,9 @@ export const routes: Routes = [
                 loadComponent: () => import('./features/settings/settings').then((m) => m.Settings),
             },
         ],
-    }
+    },
+    {
+        path: '**',
+        redirectTo: 'not-found',
+    },
 ];
