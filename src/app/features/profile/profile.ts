@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, OnDestroy, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { AdminProfileUpdateRequest } from '../../core/models/auth.models';
@@ -16,9 +16,10 @@ import { PageShell } from '../../shared/ui/page-shell/page-shell';
   templateUrl: './profile.html',
   styleUrl: './profile.css',
 })
-export class Profile {
+export class Profile implements OnDestroy {
   private readonly authService = inject(AuthService);
   private readonly formBuilder = inject(FormBuilder);
+  private successMessageTimeout: ReturnType<typeof setTimeout> | null = null;
 
   readonly isEditing = signal(false);
   readonly isLoading = signal(false);
@@ -63,15 +64,19 @@ export class Profile {
     this.loadProfile();
   }
 
+  ngOnDestroy(): void {
+    this.clearSuccessMessageTimeout();
+  }
+
   startEdit(): void {
     this.errorMessage.set(null);
-    this.successMessage.set(null);
+    this.clearSuccessMessage();
     this.isEditing.set(true);
   }
 
   cancelEdit(): void {
     this.errorMessage.set(null);
-    this.successMessage.set(null);
+    this.clearSuccessMessage();
     this.fillFormFromSession();
     this.isEditing.set(false);
   }
@@ -84,7 +89,7 @@ export class Profile {
 
     this.isSaving.set(true);
     this.errorMessage.set(null);
-    this.successMessage.set(null);
+    this.clearSuccessMessage();
 
     this.authService.updateProfile(this.buildPayload()).pipe(
       finalize(() => this.isSaving.set(false)),
@@ -92,7 +97,7 @@ export class Profile {
       next: () => {
         this.fillFormFromSession();
         this.isEditing.set(false);
-        this.successMessage.set('Profile updated successfully.');
+        this.setTemporarySuccessMessage('Profile updated successfully.');
       },
       error: () => {
         this.errorMessage.set('Profile update failed. Check the form and try again.');
@@ -128,6 +133,29 @@ export class Profile {
       new_password: '',
       confirm_password: '',
     });
+  }
+
+  private setTemporarySuccessMessage(message: string): void {
+    this.clearSuccessMessageTimeout();
+    this.successMessage.set(message);
+    this.successMessageTimeout = setTimeout(() => {
+      this.successMessage.set(null);
+      this.successMessageTimeout = null;
+    }, 3000);
+  }
+
+  private clearSuccessMessage(): void {
+    this.clearSuccessMessageTimeout();
+    this.successMessage.set(null);
+  }
+
+  private clearSuccessMessageTimeout(): void {
+    if (!this.successMessageTimeout) {
+      return;
+    }
+
+    clearTimeout(this.successMessageTimeout);
+    this.successMessageTimeout = null;
   }
 
   private buildPayload(): AdminProfileUpdateRequest {
