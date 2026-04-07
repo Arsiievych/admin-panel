@@ -1,17 +1,19 @@
 <app-page-shell title="My profile">
-  <div page-shell-actions class="profile-actions">
-    @if (isEditing()) {
-      <app-button variant="ghost" type="button" (pressed)="cancelEdit()">Cancel</app-button>
-      <app-button type="button" [disabled]="isSaving()" ariaLabel="Save profile changes" (pressed)="save()">
-        {{ isSaving() ? 'Saving...' : 'Save changes' }}
-      </app-button>
-    } @else {
-      <app-button variant="ghost" type="button" icon="fi fi-rr-edit" (pressed)="startEdit()">Edit profile</app-button>
-    }
-  </div>
-
   <form class="profile-form content-surface content-section" [formGroup]="form" (ngSubmit)="save()">
-    <p class="profile-mode">{{ isEditing() ? 'Editing mode' : 'Read-only' }}</p>
+    <div class="profile-form-toolbar">
+      <p class="profile-mode">{{ isEditing() ? 'Editing mode' : 'Read-only' }}</p>
+
+      <div class="profile-actions">
+        @if (isEditing()) {
+          <app-button variant="ghost" type="button" (pressed)="cancelEdit()">Cancel</app-button>
+          <app-button type="button" [disabled]="isSaving()" ariaLabel="Save profile changes" (pressed)="save()">
+            {{ isSaving() ? 'Saving...' : 'Save changes' }}
+          </app-button>
+        } @else {
+          <app-button variant="ghost" type="button" icon="fi fi-rr-edit" (pressed)="startEdit()">Edit profile</app-button>
+        }
+      </div>
+    </div>
 
     @if (isLoading()) {
       <p class="profile-message">Loading profile...</p>
@@ -124,6 +126,15 @@
           <p class="profile-field-error">Confirm password must match new password.</p>
         }
       </section>
+    }
+
+    @if (isEditing()) {
+      <div class="profile-actions profile-actions--bottom">
+        <app-button variant="ghost" type="button" (pressed)="cancelEdit()">Cancel</app-button>
+        <app-button type="button" [disabled]="isSaving()" ariaLabel="Save profile changes" (pressed)="save()">
+          {{ isSaving() ? 'Saving...' : 'Save changes' }}
+        </app-button>
+      </div>
     }
   </form>
 </app-page-shell>

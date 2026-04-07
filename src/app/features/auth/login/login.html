@@ -38,11 +38,6 @@
                         <span class="login-field-error">Password must be at least 6 characters.</span>
                     }
                 </label>
-                <label class="login-remember">
-                    <input class="login-remember-input" type="checkbox" name="remember" />
-                    <span class="login-remember-box" aria-hidden="true"></span>
-                    <span class="login-remember-text">Remember User</span>
-                </label>
                 @if (errorMessage()) {
                     <p class="login-error">{{ errorMessage() }}</p>
                 }

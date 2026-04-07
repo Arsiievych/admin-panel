@@ -36,6 +36,56 @@ export const routes: Routes = [
                 loadComponent: () => import('./features/players/players').then((m) => m.Players),
             },
             {
+                path: 'legions',
+                data: { title: 'Legions' },
+                loadComponent: () => import('./features/section-placeholder/section-placeholder').then((m) => m.SectionPlaceholder),
+            },
+            {
+                path: 'battles',
+                data: { title: 'Battles' },
+                loadComponent: () => import('./features/section-placeholder/section-placeholder').then((m) => m.SectionPlaceholder),
+            },
+            {
+                path: 'economy',
+                data: { title: 'Economy' },
+                loadComponent: () => import('./features/section-placeholder/section-placeholder').then((m) => m.SectionPlaceholder),
+            },
+            {
+                path: 'inventory',
+                data: { title: 'Inventory' },
+                loadComponent: () => import('./features/section-placeholder/section-placeholder').then((m) => m.SectionPlaceholder),
+            },
+            {
+                path: 'store',
+                data: { title: 'Store' },
+                loadComponent: () => import('./features/section-placeholder/section-placeholder').then((m) => m.SectionPlaceholder),
+            },
+            {
+                path: 'leaderboards',
+                data: { title: 'Leaderboards' },
+                loadComponent: () => import('./features/section-placeholder/section-placeholder').then((m) => m.SectionPlaceholder),
+            },
+            {
+                path: 'moderation',
+                data: { title: 'Moderation' },
+                loadComponent: () => import('./features/section-placeholder/section-placeholder').then((m) => m.SectionPlaceholder),
+            },
+            {
+                path: 'analytics',
+                data: { title: 'Analytics' },
+                loadComponent: () => import('./features/section-placeholder/section-placeholder').then((m) => m.SectionPlaceholder),
+            },
+            {
+                path: 'admin-users',
+                data: { title: 'Admin Users' },
+                loadComponent: () => import('./features/section-placeholder/section-placeholder').then((m) => m.SectionPlaceholder),
+            },
+            {
+                path: 'audit-log',
+                data: { title: 'Audit Log' },
+                loadComponent: () => import('./features/section-placeholder/section-placeholder').then((m) => m.SectionPlaceholder),
+            },
+            {
                 path: 'profile',
                 loadComponent: () => import('./features/profile/profile').then((m) => m.Profile),
             },
