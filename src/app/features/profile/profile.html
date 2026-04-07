@@ -1,7 +1,4 @@
-<app-page-shell
-  title="My profile"
-  description="Manage your admin account identity and password from one place."
->
+<app-page-shell title="My profile">
   <div page-shell-actions class="profile-actions">
     @if (isEditing()) {
       <app-button variant="ghost" type="button" (pressed)="cancelEdit()">Cancel</app-button>
@@ -31,7 +28,7 @@
     <section class="profile-section" aria-labelledby="profile-account-title">
       <div class="profile-section-header">
         <h2 class="profile-section-title" id="profile-account-title">Account details</h2>
-        <p class="profile-section-copy">Name and email are shown across the admin panel.</p>
+        <p class="profile-section-copy">Name and email are shown in your account menu.</p>
       </div>
       <div class="profile-grid">
         <label class="profile-field">

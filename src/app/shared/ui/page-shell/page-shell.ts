@@ -7,7 +7,7 @@ import { Component, Input } from '@angular/core';
   styleUrl: './page-shell.css',
 })
 export class PageShell {
-  @Input() eyebrow = 'Admin panel';
+  @Input() eyebrow = '';
   @Input() title = '';
   @Input() description = '';
 }
