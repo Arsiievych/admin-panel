@@ -1,0 +1,198 @@
+.admin-users {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.admin-users-toolbar,
+.admin-users-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-right: 5.75rem;
+}
+
+.admin-users-summary,
+.admin-users-user {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.admin-users-count,
+.admin-users-meta,
+.admin-users-alert,
+.admin-users-table {
+  margin: 0;
+}
+
+.admin-users-count {
+  color: #eef7fd;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.admin-users-meta,
+.admin-users-email,
+.admin-users-signature,
+.admin-users-pagination {
+  color: rgba(211, 225, 239, 0.66);
+  font-size: 0.86rem;
+}
+
+.admin-users-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+
+.admin-users-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: rgba(211, 225, 239, 0.72);
+  font-size: 0.84rem;
+}
+
+.admin-users-control select,
+.admin-users-button {
+  min-height: 2.35rem;
+  border: 1px solid rgba(145, 202, 229, 0.18);
+  border-radius: 0.7rem;
+  background: rgba(10, 19, 34, 0.72);
+  color: #eef7fd;
+  font: inherit;
+}
+
+.admin-users-control select {
+  padding: 0 0.7rem;
+}
+
+.admin-users-button {
+  padding: 0 0.8rem;
+  cursor: pointer;
+}
+
+.admin-users-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.admin-users-alert {
+  padding: 0.85rem 0.95rem;
+  border: 1px solid rgba(239, 68, 68, 0.46);
+  border-radius: 0.85rem;
+  background: rgba(239, 68, 68, 0.14);
+  color: #ffb4b4;
+  font-size: 0.88rem;
+}
+
+.admin-users-table-region {
+  overflow-x: auto;
+}
+
+.admin-users-table {
+  width: 100%;
+  min-width: 56rem;
+  border-collapse: collapse;
+}
+
+.admin-users-table th,
+.admin-users-table td {
+  padding: 0.85rem 0.75rem;
+  border-bottom: 1px solid rgba(145, 202, 229, 0.12);
+  color: rgba(238, 247, 253, 0.88);
+  font-size: 0.9rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.admin-users-table th {
+  color: rgba(189, 247, 255, 0.68);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.admin-users-id,
+.admin-users-name {
+  color: #eef7fd;
+  font-weight: 650;
+}
+
+.admin-users-email,
+.admin-users-signature {
+  max-width: 18rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-users-verified,
+.admin-users-rank,
+.admin-users-status,
+.admin-users-providers span {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  min-height: 1.45rem;
+  padding: 0 0.45rem;
+  border: 1px solid rgba(145, 202, 229, 0.16);
+  border-radius: 0.5rem;
+  background: rgba(83, 221, 255, 0.08);
+  color: #bdf7ff;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.admin-users-rank {
+  background: rgba(245, 158, 11, 0.1);
+  color: #ffd99a;
+}
+
+.admin-users-badge-cell,
+.admin-users-rank-cell {
+  text-align: center;
+}
+
+.admin-users-badge-cell .admin-users-status,
+.admin-users-rank-cell .admin-users-rank {
+  margin-inline: auto;
+}
+
+.admin-users-muted {
+  color: rgba(211, 225, 239, 0.46);
+}
+
+.admin-users-providers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  justify-content: center;
+}
+
+.admin-users-empty {
+  height: 8rem;
+  color: rgba(211, 225, 239, 0.66);
+  text-align: center;
+  vertical-align: middle;
+}
+
+@media (max-width: 760px) {
+  .admin-users-toolbar,
+  .admin-users-pagination {
+    align-items: flex-start;
+    flex-direction: column;
+    padding-right: 0;
+  }
+
+  .admin-users-controls {
+    justify-content: flex-start;
+  }
+}

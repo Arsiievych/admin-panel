@@ -32,7 +32,8 @@ export const routes: Routes = [
             {
                 path: 'players',
                 title: 'Players',
-                loadComponent: () => import('./features/players/players').then((m) => m.Players),
+                data: { title: 'Players' },
+                loadComponent: () => import('./features/admin-users/admin-users').then((m) => m.AdminUsers),
             },
             {
                 path: 'legions',

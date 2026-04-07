@@ -1,0 +1,116 @@
+<app-page-shell [title]="title">
+  <section class="admin-users content-surface">
+    <header class="admin-users-toolbar">
+      <div class="admin-users-summary">
+        <p class="admin-users-count">{{ rangeLabel() }}</p>
+        <p class="admin-users-meta">Sorted by {{ order() === 'id' ? 'oldest first' : 'newest first' }}</p>
+      </div>
+
+      <div class="admin-users-controls" aria-label="Users table controls">
+        <label class="admin-users-control">
+          <span>Per page</span>
+          <select [value]="perPage()" (change)="setPerPage($any($event.target).value)">
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+          </select>
+        </label>
+
+        <label class="admin-users-control">
+          <span>Order</span>
+          <select [value]="order()" (change)="setOrder($any($event.target).value)">
+            <option value="id">ID asc</option>
+            <option value="-id">ID desc</option>
+          </select>
+        </label>
+
+        <button class="admin-users-button" type="button" [disabled]="isLoading()" (click)="reload()">Refresh</button>
+      </div>
+    </header>
+
+    @if (errorMessage()) {
+      <p class="admin-users-alert">{{ errorMessage() }}</p>
+    }
+
+    <div class="admin-users-table-region">
+      <table class="admin-users-table">
+        <thead>
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">User</th>
+            <th scope="col">Role</th>
+            <th scope="col">Status</th>
+            <th scope="col">Rank</th>
+            <th scope="col">Providers</th>
+            <th scope="col">Created</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (isLoading()) {
+            <tr>
+              <td colspan="7" class="admin-users-empty">Loading users...</td>
+            </tr>
+          } @else {
+            @for (user of users(); track user.id) {
+              <tr>
+                <td class="admin-users-id">#{{ user.id }}</td>
+                <td>
+                  <div class="admin-users-user">
+                    <span class="admin-users-name">{{ user.nickname || 'No nickname' }}</span>
+                    <span class="admin-users-email">
+                      {{ user.email }}
+                      @if (user.email_verified) {
+                        <span class="admin-users-verified">verified</span>
+                      }
+                    </span>
+                    @if (user.signature) {
+                      <span class="admin-users-signature">{{ user.signature }}</span>
+                    }
+                  </div>
+                </td>
+                <td>{{ user.role }}</td>
+                <td class="admin-users-badge-cell">
+                  <span class="admin-users-status">{{ user.status }}</span>
+                </td>
+                <td class="admin-users-rank-cell">
+                  @if (user.rank) {
+                    <span class="admin-users-rank">{{ user.rank }}</span>
+                  } @else {
+                    <span class="admin-users-muted">—</span>
+                  }
+                </td>
+                <td class="admin-users-badge-cell">
+                  <div class="admin-users-providers">
+                    @for (provider of user.linked_providers; track provider) {
+                      <span>{{ provider }}</span>
+                    }
+                  </div>
+                </td>
+                <td>{{ user.created_at | date: 'mediumDate' }}</td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="7" class="admin-users-empty">No users found.</td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <footer class="admin-users-pagination">
+      <button class="admin-users-button" type="button" [disabled]="page() <= 1 || isLoading()" (click)="previousPage()">
+        Previous
+      </button>
+      <span>Page {{ page() }} of {{ totalPages() }}</span>
+      <button
+        class="admin-users-button"
+        type="button"
+        [disabled]="page() >= totalPages() || isLoading()"
+        (click)="nextPage()"
+      >
+        Next
+      </button>
+    </footer>
+  </section>
+</app-page-shell>
