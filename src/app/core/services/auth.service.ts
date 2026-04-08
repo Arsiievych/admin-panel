@@ -117,7 +117,7 @@ export class AuthService {
 
         this.setSession({
             ...currentSession,
-            profile,
+            profile: this.normalizeProfile(profile),
         });
     }
 
@@ -129,7 +129,12 @@ export class AuthService {
         }
 
         try {
-            return JSON.parse(rawSession) as AuthSession;
+            const session = JSON.parse(rawSession) as AuthSession;
+
+            return {
+                ...session,
+                profile: this.normalizeProfile(session.profile),
+            };
         } catch {
             localStorage.removeItem(this.storageKey);
 
@@ -145,7 +150,7 @@ export class AuthService {
             tokenType: data.token_type,
             expiresIn: data.expires_in,
             expiresAt: this.getExpiresAt(data.expires_in),
-            profile: data.profile,
+            profile: this.normalizeProfile(data.profile),
         };
     }
 
@@ -166,5 +171,31 @@ export class AuthService {
 
     private isSessionExpired(session: AuthSession): boolean {
         return Date.now() >= session.expiresAt;
+    }
+
+    private normalizeProfile(profile: UserProfile): UserProfile {
+        return {
+            ...profile,
+            role: this.normalizeRole(profile.role),
+        };
+    }
+
+    private normalizeRole(role: unknown): UserRole {
+        switch (role) {
+            case 1:
+            case '1':
+                return 'USER';
+            case 2:
+            case '2':
+                return 'MODERATOR';
+            case 3:
+            case '3':
+                return 'ADMIN';
+            case 4:
+            case '4':
+                return 'SUPER_ADMIN';
+            default:
+                return typeof role === 'string' ? role.trim().toUpperCase() : 'USER';
+        }
     }
 }
