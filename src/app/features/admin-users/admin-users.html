@@ -3,28 +3,71 @@
     <header class="admin-users-toolbar">
       <div class="admin-users-summary">
         <p class="admin-users-count">{{ rangeLabel() }}</p>
-        <p class="admin-users-meta">Sorted by {{ order() === 'id' ? 'oldest first' : 'newest first' }}</p>
+        <p class="admin-users-meta">Manage admin-panel access from one table.</p>
       </div>
 
       <div class="admin-users-controls" aria-label="Users table controls">
-        <label class="admin-users-control">
-          <span>Per page</span>
-          <select [value]="perPage()" (change)="setPerPage($any($event.target).value)">
-            <option value="10">10</option>
-            <option value="25">25</option>
-            <option value="50">50</option>
-          </select>
+        <label class="admin-users-control admin-users-control--search">
+          <span class="admin-users-search-field">
+            <i class="fi fi-rr-search" aria-hidden="true"></i>
+            <input
+              type="search"
+              [value]="searchDraft()"
+              placeholder="Search by ID, nickname, email"
+              (input)="setSearchDraft($any($event.target).value)"
+            />
+          </span>
         </label>
 
-        <label class="admin-users-control">
-          <span>Order</span>
-          <select [value]="order()" (change)="setOrder($any($event.target).value)">
-            <option value="id">ID asc</option>
-            <option value="-id">ID desc</option>
-          </select>
-        </label>
+        <div class="admin-users-filter-wrap">
+          <button
+            class="admin-users-icon-button"
+            type="button"
+            aria-label="Toggle filters"
+            [attr.aria-expanded]="filtersOpen()"
+            (click)="toggleFilters()"
+          >
+            <i class="fi fi-rr-settings-sliders" aria-hidden="true"></i>
+          </button>
 
-        <button class="admin-users-button" type="button" [disabled]="isLoading()" (click)="reload()">Refresh</button>
+          @if (filtersOpen()) {
+            <div class="admin-users-filter-menu">
+              <label class="admin-users-control">
+                <span>Role</span>
+                <select [value]="roleFilter()" (change)="setRoleFilter($any($event.target).value)">
+                  <option value="">All</option>
+                  <option value="SUPER_ADMIN">Super Admin</option>
+                  <option value="ADMIN">Admin</option>
+                  <option value="MODERATOR">Moderator</option>
+                  <option value="USER">User</option>
+                </select>
+              </label>
+
+              <label class="admin-users-control">
+                <span>Status</span>
+                <select [value]="statusFilter()" (change)="setStatusFilter($any($event.target).value)">
+                  <option value="">All</option>
+                  <option value="active">Active</option>
+                  <option value="pending_deletion">Pending deletion</option>
+                  <option value="anonymized">Anonymized</option>
+                </select>
+              </label>
+
+              <label class="admin-users-control">
+                <span>Email verified</span>
+                <select [value]="emailVerifiedFilter()" (change)="setEmailVerifiedFilter($any($event.target).value)">
+                  <option value="">All</option>
+                  <option value="true">Verified</option>
+                  <option value="false">Not verified</option>
+                </select>
+              </label>
+            </div>
+          }
+        </div>
+
+        <button class="admin-users-icon-button" type="button" aria-label="Refresh users" [disabled]="isLoading()" (click)="reload()">
+          <i class="fi fi-rr-refresh" aria-hidden="true"></i>
+        </button>
       </div>
     </header>
 
@@ -34,63 +77,87 @@
 
     <div class="admin-users-table-region">
       <table class="admin-users-table">
+        <colgroup>
+          <col class="admin-users-col admin-users-col--id" />
+          <col class="admin-users-col admin-users-col--nickname" />
+          <col class="admin-users-col admin-users-col--email" />
+          <col class="admin-users-col admin-users-col--role" />
+          <col class="admin-users-col admin-users-col--status" />
+          <col class="admin-users-col admin-users-col--details" />
+        </colgroup>
         <thead>
           <tr>
-            <th scope="col">ID</th>
-            <th scope="col">User</th>
-            <th scope="col">Role</th>
-            <th scope="col">Status</th>
-            <th scope="col">Rank</th>
-            <th scope="col">Providers</th>
-            <th scope="col">Created</th>
+            <th scope="col" class="admin-users-sortable-head">
+              <button class="admin-users-sort" type="button" (click)="sortBy('id')">
+                <span>ID</span>
+                <span class="admin-users-sort-indicator" [class.is-active]="sortDirection('id')" [class.is-desc]="sortDirection('id') === 'desc'"></span>
+              </button>
+            </th>
+            <th scope="col" class="admin-users-sortable-head">
+              <button class="admin-users-sort" type="button" (click)="sortBy('name')">
+                <span>Nickname</span>
+                <span
+                  class="admin-users-sort-indicator"
+                  [class.is-active]="sortDirection('name')"
+                  [class.is-desc]="sortDirection('name') === 'desc'"
+                ></span>
+              </button>
+            </th>
+            <th scope="col">Email</th>
+            <th scope="col" class="admin-users-sortable-head">
+              <button class="admin-users-sort" type="button" (click)="sortBy('role')">
+                <span>Role</span>
+                <span
+                  class="admin-users-sort-indicator"
+                  [class.is-active]="sortDirection('role')"
+                  [class.is-desc]="sortDirection('role') === 'desc'"
+                ></span>
+              </button>
+            </th>
+            <th scope="col" class="admin-users-sortable-head">
+              <button class="admin-users-sort" type="button" (click)="sortBy('status')">
+                <span>Status</span>
+                <span
+                  class="admin-users-sort-indicator"
+                  [class.is-active]="sortDirection('status')"
+                  [class.is-desc]="sortDirection('status') === 'desc'"
+                ></span>
+              </button>
+            </th>
+            <th scope="col" class="admin-users-details-head">Details</th>
           </tr>
         </thead>
         <tbody>
           @if (isLoading()) {
             <tr>
-              <td colspan="7" class="admin-users-empty">Loading users...</td>
+              <td colspan="6" class="admin-users-empty">Loading users...</td>
             </tr>
           } @else {
             @for (user of users(); track user.id) {
               <tr>
                 <td class="admin-users-id">#{{ user.id }}</td>
-                <td>
-                  <div class="admin-users-user">
-                    <span class="admin-users-name">{{ user.nickname || 'No nickname' }}</span>
-                    <span class="admin-users-email">
-                      {{ user.email }}
-                      @if (user.email_verified) {
-                        <span class="admin-users-verified">verified</span>
-                      }
-                    </span>
-                    @if (user.signature) {
-                      <span class="admin-users-signature">{{ user.signature }}</span>
-                    }
-                  </div>
-                </td>
-                <td>{{ user.role }}</td>
-                <td class="admin-users-badge-cell">
-                  <span class="admin-users-status">{{ user.status }}</span>
-                </td>
-                <td class="admin-users-rank-cell">
-                  @if (user.rank) {
-                    <span class="admin-users-rank">{{ user.rank }}</span>
-                  } @else {
-                    <span class="admin-users-muted">—</span>
+                <td class="admin-users-name">{{ user.nickname || 'No nickname' }}</td>
+                <td class="admin-users-email">
+                  {{ user.email }}
+                  @if (user.email_verified) {
+                    <span class="admin-users-verified">Verified</span>
                   }
                 </td>
                 <td class="admin-users-badge-cell">
-                  <div class="admin-users-providers">
-                    @for (provider of user.linked_providers; track provider) {
-                      <span>{{ provider }}</span>
-                    }
-                  </div>
+                  <span class="admin-users-role">{{ user.role }}</span>
                 </td>
-                <td>{{ user.created_at | date: 'mediumDate' }}</td>
+                <td class="admin-users-badge-cell">
+                  <span class="admin-users-status" [class.admin-users-status--inactive]="!user.is_active">
+                    {{ user.is_active ? 'Active' : 'Inactive' }}
+                  </span>
+                </td>
+                <td class="admin-users-badge-cell">
+                  <button class="admin-users-button admin-users-button--details" type="button">Details</button>
+                </td>
               </tr>
             } @empty {
               <tr>
-                <td colspan="7" class="admin-users-empty">No users found.</td>
+                <td colspan="6" class="admin-users-empty">No users found.</td>
               </tr>
             }
           }

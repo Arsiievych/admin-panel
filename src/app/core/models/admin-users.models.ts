@@ -1,9 +1,16 @@
-export type AdminUsersOrder = 'id' | '-id';
+export type AdminUsersOrder = 'id' | '-id' | 'name' | '-name' | 'role' | '-role' | 'status' | '-status';
+export type AdminUsersRoleFilter = 'SUPER_ADMIN' | 'ADMIN' | 'MODERATOR' | 'USER' | '';
+export type AdminUsersStatusFilter = 'active' | 'pending_deletion' | 'anonymized' | '';
+export type AdminUsersEmailVerifiedFilter = 'true' | 'false' | '';
 
 export interface AdminUsersRequest {
   page: number;
   per_page: number;
   order: AdminUsersOrder;
+  role?: Exclude<AdminUsersRoleFilter, ''>;
+  status?: Exclude<AdminUsersStatusFilter, ''>;
+  email_verified?: boolean;
+  search?: string;
 }
 
 export interface AdminUsersResponse {
@@ -24,9 +31,5 @@ export interface AdminUser {
   nickname: string;
   email: string;
   email_verified: boolean;
-  signature: string | null;
-  rank: string | null;
-  created_at: string;
-  status: string;
-  linked_providers: string[];
+  is_active: boolean;
 }

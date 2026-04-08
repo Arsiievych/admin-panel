@@ -11,11 +11,9 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding-right: 5.75rem;
 }
 
-.admin-users-summary,
-.admin-users-user {
+.admin-users-summary {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
@@ -36,8 +34,6 @@
 }
 
 .admin-users-meta,
-.admin-users-email,
-.admin-users-signature,
 .admin-users-pagination {
   color: rgba(211, 225, 239, 0.66);
   font-size: 0.86rem;
@@ -48,6 +44,7 @@
   align-items: center;
   justify-content: flex-end;
   gap: 0.7rem;
+  margin-left: auto;
   flex-wrap: wrap;
 }
 
@@ -59,8 +56,10 @@
   font-size: 0.84rem;
 }
 
+.admin-users-control input,
 .admin-users-control select,
-.admin-users-button {
+.admin-users-button,
+.admin-users-icon-button {
   min-height: 2.35rem;
   border: 1px solid rgba(145, 202, 229, 0.18);
   border-radius: 0.7rem;
@@ -73,12 +72,90 @@
   padding: 0 0.7rem;
 }
 
+.admin-users-search-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 2.35rem;
+  padding: 0 0.8rem;
+  border: 1px solid rgba(145, 202, 229, 0.18);
+  border-radius: 0.7rem;
+  background: rgba(10, 19, 34, 0.72);
+}
+
+.admin-users-search-field i {
+  color: rgba(189, 247, 255, 0.6);
+  font-size: 0.9rem;
+}
+
+.admin-users-control--search input {
+  width: 17rem;
+  min-height: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.admin-users-control--search input::placeholder {
+  color: rgba(211, 225, 239, 0.42);
+}
+
+.admin-users-control--search input:focus {
+  outline: none;
+}
+
+.admin-users-filter-wrap {
+  position: relative;
+}
+
+.admin-users-filter-menu {
+  position: absolute;
+  top: calc(100% + 0.45rem);
+  right: 0;
+  z-index: 2;
+  padding: 0.8rem;
+  border: 1px solid rgba(145, 202, 229, 0.16);
+  border-radius: 0.8rem;
+  background: rgba(11, 22, 39, 0.92);
+  box-shadow: 0 18px 40px rgba(4, 10, 22, 0.32);
+  backdrop-filter: blur(14px);
+}
+
+.admin-users-filter-menu .admin-users-control {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.admin-users-icon-button {
+  display: inline-grid;
+  width: 2.35rem;
+  padding: 0;
+  place-items: center;
+  cursor: pointer;
+}
+
+.admin-users-icon-button i {
+  font-size: 0.95rem;
+}
+
 .admin-users-button {
   padding: 0 0.8rem;
   cursor: pointer;
 }
 
+.admin-users-button--details {
+  min-height: 2rem;
+  padding: 0 0.65rem;
+  font-size: 0.82rem;
+}
+
 .admin-users-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.admin-users-icon-button:disabled {
   cursor: not-allowed;
   opacity: 0.55;
 }
@@ -98,8 +175,33 @@
 
 .admin-users-table {
   width: 100%;
-  min-width: 56rem;
+  min-width: 48rem;
   border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.admin-users-col--id {
+  width: 9%;
+}
+
+.admin-users-col--nickname {
+  width: 23%;
+}
+
+.admin-users-col--email {
+  width: 36%;
+}
+
+.admin-users-col--role {
+  width: 11%;
+}
+
+.admin-users-col--status {
+  width: 11%;
+}
+
+.admin-users-col--details {
+  width: 10%;
 }
 
 .admin-users-table th,
@@ -109,7 +211,8 @@
   color: rgba(238, 247, 253, 0.88);
   font-size: 0.9rem;
   text-align: left;
-  vertical-align: top;
+  vertical-align: middle;
+  box-sizing: border-box;
 }
 
 .admin-users-table th {
@@ -120,61 +223,120 @@
   text-transform: uppercase;
 }
 
+.admin-users-sortable-head {
+  color: rgba(211, 240, 251, 0.9);
+}
+
 .admin-users-id,
 .admin-users-name {
   color: #eef7fd;
   font-weight: 650;
 }
 
-.admin-users-email,
-.admin-users-signature {
-  max-width: 18rem;
+.admin-users-email {
+  color: rgba(211, 225, 239, 0.72);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+.admin-users-sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+  transition: color 120ms ease;
+}
+
+.admin-users-sort--center {
+  justify-content: center;
+  width: 100%;
+}
+
+.admin-users-sort:hover {
+  color: #eef7fd;
+}
+
+.admin-users-sort-indicator {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-right: 1.5px solid transparent;
+  border-bottom: 1.5px solid transparent;
+  transform: rotate(45deg) translateY(-0.05rem);
+  opacity: 0.35;
+}
+
+.admin-users-sort-indicator.is-active {
+  border-color: rgba(189, 247, 255, 0.75);
+  opacity: 1;
+}
+
+.admin-users-sort-indicator.is-desc {
+  transform: rotate(-135deg) translateY(-0.05rem);
+}
+
 .admin-users-verified,
-.admin-users-rank,
-.admin-users-status,
-.admin-users-providers span {
+.admin-users-role,
+.admin-users-status {
   display: inline-flex;
   width: fit-content;
   align-items: center;
-  min-height: 1.45rem;
-  padding: 0 0.45rem;
-  border: 1px solid rgba(145, 202, 229, 0.16);
-  border-radius: 0.5rem;
-  background: rgba(83, 221, 255, 0.08);
-  color: #bdf7ff;
-  font-size: 0.72rem;
+  gap: 0.35rem;
+  min-height: 1.2rem;
+  padding: 0;
+  color: rgba(189, 247, 255, 0.82);
+  font-size: 0.76rem;
   font-weight: 600;
 }
 
-.admin-users-rank {
-  background: rgba(245, 158, 11, 0.1);
-  color: #ffd99a;
+.admin-users-verified::before {
+  content: '';
+  width: 0.38rem;
+  height: 0.38rem;
+  border-radius: 999px;
+  background: currentColor;
+  opacity: 0.9;
+}
+
+.admin-users-verified {
+  margin-left: 0.55rem;
+  color: rgba(110, 231, 183, 0.92);
+}
+
+.admin-users-role {
+  color: rgba(189, 247, 255, 0.72);
+}
+
+.admin-users-status {
+  color: rgba(110, 231, 183, 0.88);
+}
+
+.admin-users-status--inactive {
+  color: rgba(248, 180, 104, 0.88);
 }
 
 .admin-users-badge-cell,
-.admin-users-rank-cell {
+.admin-users-details-head {
   text-align: center;
 }
 
-.admin-users-badge-cell .admin-users-status,
-.admin-users-rank-cell .admin-users-rank {
+.admin-users-badge-cell .admin-users-role,
+.admin-users-badge-cell .admin-users-button {
   margin-inline: auto;
 }
 
-.admin-users-muted {
-  color: rgba(211, 225, 239, 0.46);
-}
-
-.admin-users-providers {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-  justify-content: center;
+.admin-users-id,
+.admin-users-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .admin-users-empty {
@@ -189,10 +351,14 @@
   .admin-users-pagination {
     align-items: flex-start;
     flex-direction: column;
-    padding-right: 0;
   }
 
   .admin-users-controls {
     justify-content: flex-start;
+  }
+
+  .admin-users-filter-menu {
+    left: 0;
+    right: auto;
   }
 }
