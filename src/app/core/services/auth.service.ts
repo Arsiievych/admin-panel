@@ -6,12 +6,14 @@ import {
     LoginRequest,
     LoginResponse,
     RefreshResponse,
+    UserRole,
     UserProfile,
     UserProfileResponse,
 } from '../models/auth.models';
 import { ApiService } from './api.service';
 
 type RefreshTokenData = Pick<AuthSession, 'accessToken' | 'tokenType' | 'expiresIn' | 'expiresAt'>;
+const ADMIN_PANEL_ROLES: readonly UserRole[] = ['SUPER_ADMIN', 'MODERATOR', 'ADMIN'];
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -26,6 +28,11 @@ export class AuthService {
         const session = this.sessionSignal();
 
         return !!session?.accessToken && !this.isSessionExpired(session);
+    });
+    readonly hasAdminAccess = computed(() => {
+        const profile = this.profile();
+
+        return !!profile && ADMIN_PANEL_ROLES.includes(profile.role);
     });
 
     login(payload: LoginRequest) {
@@ -69,6 +76,10 @@ export class AuthService {
 
     getAccessToken(): string | null {
         return this.sessionSignal()?.accessToken ?? null;
+    }
+
+    canAccessAdminPanel(): boolean {
+        return this.isAuthenticated() && this.hasAdminAccess();
     }
 
     isTokenExpired(): boolean {

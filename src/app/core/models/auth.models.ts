@@ -44,12 +44,14 @@ export interface AdminProfileUpdateRequest {
     confirm_password?: string;
 }
 
+export type UserRole = 'SUPER_ADMIN' | 'MODERATOR' | 'ADMIN' | 'USER' | string;
+
 export interface UserProfile {
     id: number;
     nickname: string;
     email: string;
     email_verified: boolean;
-    role: number;
+    role: UserRole;
     status: string;
     language: string;
 }

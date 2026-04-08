@@ -1,4 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
+import { UserRole } from '../../../../core/models/auth.models';
 import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
@@ -25,18 +26,18 @@ export class CurrentUser {
     return `${value.slice(0, this.maxDisplayNameLength - 3)}...`;
   }
 
-  private getRoleLabel(role?: number): string {
+  private getRoleLabel(role?: UserRole): string {
     switch (role) {
-      case 3:
+      case 'SUPER_ADMIN':
         return 'Super Admin';
-      case 2:
+      case 'ADMIN':
         return 'Admin';
-      case 1:
+      case 'MODERATOR':
         return 'Moderator';
-      case 0:
+      case 'USER':
         return 'User';
       default:
-        return 'Unknown role';
+        return role ? role.replace(/_/g, ' ') : 'Unknown role';
     }
   }
 
