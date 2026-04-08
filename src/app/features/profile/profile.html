@@ -1,55 +1,83 @@
-<app-page-shell title="My profile">
-  <form class="profile-form content-surface content-section" [formGroup]="form" (ngSubmit)="save()">
-    <div class="profile-form-toolbar">
-      <p class="profile-mode">{{ isEditing() ? 'Editing mode' : 'Read-only' }}</p>
+<app-page-shell title="My Profile">
+  @if (isLoading()) {
+    <p class="profile-message">Loading profile...</p>
+  }
 
-      <div class="profile-actions">
-        @if (isEditing()) {
-          <app-button variant="ghost" type="button" (pressed)="cancelEdit()">Cancel</app-button>
-          <app-button type="button" [disabled]="isSaving()" ariaLabel="Save profile changes" (pressed)="save()">
-            {{ isSaving() ? 'Saving...' : 'Save changes' }}
+  @if (pageErrorMessage()) {
+    <p class="profile-alert profile-alert--error">{{ pageErrorMessage() }}</p>
+  }
+
+  <form class="profile-card profile-card--account profile-form" [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+    <div class="profile-card-hero">
+      <div class="profile-identity">
+        <div class="profile-avatar" aria-hidden="true">{{ getAvatarLetters() }}</div>
+
+        <div class="profile-identity-copy">
+          <div class="profile-identity-row">
+            <h2 class="profile-identity-name">{{ getDisplayName() }}</h2>
+            <span class="profile-role-badge">{{ getRoleLabel() }}</span>
+          </div>
+
+          <p class="profile-identity-email">{{ getDisplayEmail() }}</p>
+        </div>
+      </div>
+
+      <div class="profile-card-actions">
+        @if (isProfileEditing()) {
+          <p class="profile-mode">Editing Mode: Profile</p>
+          <app-button variant="ghost" type="button" ariaLabel="Cancel profile editing" (pressed)="cancelProfileEdit()">
+            Cancel
+          </app-button>
+          <app-button type="submit" [disabled]="isProfileSaving()" ariaLabel="Save profile changes">
+            {{ isProfileSaving() ? 'Saving...' : 'Save' }}
           </app-button>
         } @else {
-          <app-button variant="ghost" type="button" icon="fi fi-rr-edit" (pressed)="startEdit()">Edit profile</app-button>
+          <app-button
+            type="button"
+            ariaLabel="Edit profile"
+            icon="fi fi-rr-edit"
+            (pressed)="startProfileEdit()"
+          >
+            Edit
+          </app-button>
         }
       </div>
     </div>
 
-    @if (isLoading()) {
-      <p class="profile-message">Loading profile...</p>
-    }
+    <div class="profile-card-divider" aria-hidden="true"></div>
 
-    @if (successMessage()) {
-      <p class="profile-alert profile-alert--success">{{ successMessage() }}</p>
-    }
-
-    @if (errorMessage()) {
-      <p class="profile-alert profile-alert--error">{{ errorMessage() }}</p>
-    }
-
-    <section class="profile-section" aria-labelledby="profile-account-title">
+    <div class="profile-card-body">
       <div class="profile-section-header">
-        <h2 class="profile-section-title" id="profile-account-title">Account details</h2>
-        <p class="profile-section-copy">Name and email are shown in your account menu.</p>
+        <h3 class="profile-section-title">Account Details</h3>
+        <p class="profile-section-copy">Update the name and email shown in your admin account.</p>
       </div>
+
+      @if (profileSuccessMessage()) {
+        <p class="profile-alert profile-alert--success">{{ profileSuccessMessage() }}</p>
+      }
+
+      @if (profileErrorMessage()) {
+        <p class="profile-alert profile-alert--error">{{ profileErrorMessage() }}</p>
+      }
+
       <div class="profile-grid">
         <label class="profile-field">
           <span class="profile-field-label">Name</span>
           <input
             class="profile-input"
-            [class.is-invalid]="form.controls.name.touched && form.controls.name.invalid"
-            [readonly]="!isEditing()"
+            [class.is-invalid]="profileForm.controls.name.touched && profileForm.controls.name.invalid"
+            [readonly]="!isProfileEditing()"
             type="text"
             formControlName="name"
             autocomplete="name"
           />
-          @if (form.controls.name.touched && form.controls.name.hasError('required')) {
+          @if (profileForm.controls.name.touched && profileForm.controls.name.hasError('required')) {
             <span class="profile-field-error">Name is required.</span>
           }
-          @if (form.controls.name.touched && form.controls.name.hasError('minlength')) {
+          @if (profileForm.controls.name.touched && profileForm.controls.name.hasError('minlength')) {
             <span class="profile-field-error">Name must be at least 3 characters.</span>
           }
-          @if (form.controls.name.touched && form.controls.name.hasError('maxlength')) {
+          @if (profileForm.controls.name.touched && profileForm.controls.name.hasError('maxlength')) {
             <span class="profile-field-error">Name must be 50 characters or fewer.</span>
           }
         </label>
@@ -58,35 +86,71 @@
           <span class="profile-field-label">Email</span>
           <input
             class="profile-input"
-            [class.is-invalid]="form.controls.email.touched && form.controls.email.invalid"
-            [readonly]="!isEditing()"
+            [class.is-invalid]="profileForm.controls.email.touched && profileForm.controls.email.invalid"
+            [readonly]="!isProfileEditing()"
             type="email"
             formControlName="email"
             autocomplete="email"
           />
-          @if (form.controls.email.touched && form.controls.email.hasError('required')) {
+          @if (profileForm.controls.email.touched && profileForm.controls.email.hasError('required')) {
             <span class="profile-field-error">Email is required.</span>
           }
-          @if (form.controls.email.touched && form.controls.email.hasError('email')) {
+          @if (profileForm.controls.email.touched && profileForm.controls.email.hasError('email')) {
             <span class="profile-field-error">Enter a valid email address.</span>
           }
         </label>
       </div>
-    </section>
 
-    @if (isEditing()) {
-      <section class="profile-section profile-section--password" aria-labelledby="profile-password-title">
-        <div class="profile-section-header">
-          <h2 class="profile-section-title" id="profile-password-title">Password</h2>
-          <p class="profile-section-copy">Leave these fields empty if you only want to update name or email.</p>
-        </div>
+    </div>
+  </form>
+
+  <form class="profile-card profile-card--security profile-form" [formGroup]="passwordForm" (ngSubmit)="savePassword()">
+    <div class="profile-security-header">
+      <div class="profile-security-copy">
+        <h2 class="profile-security-title">Security & Password</h2>
+        <p class="profile-section-copy">Use the password form only when you need to rotate your credentials.</p>
+      </div>
+
+      <div class="profile-card-actions">
+        @if (isPasswordEditing()) {
+          <p class="profile-mode">Editing Mode: Password</p>
+          <app-button variant="ghost" type="button" ariaLabel="Cancel password editing" (pressed)="cancelPasswordEdit()">
+            Cancel
+          </app-button>
+          <app-button type="submit" [disabled]="isPasswordSaving()" ariaLabel="Save password changes">
+            {{ isPasswordSaving() ? 'Saving...' : 'Save' }}
+          </app-button>
+        } @else {
+          <app-button
+            type="button"
+            ariaLabel="Change password"
+            icon="fi fi-rr-lock"
+            (pressed)="startPasswordEdit()"
+          >
+            Change Password
+          </app-button>
+        }
+      </div>
+    </div>
+
+    @if (isPasswordEditing()) {
+      <div class="profile-card-divider" aria-hidden="true"></div>
+
+      <div class="profile-card-body">
+        @if (passwordSuccessMessage()) {
+          <p class="profile-alert profile-alert--success">{{ passwordSuccessMessage() }}</p>
+        }
+
+        @if (passwordErrorMessage()) {
+          <p class="profile-alert profile-alert--error">{{ passwordErrorMessage() }}</p>
+        }
 
         <div class="profile-grid profile-grid--password">
           <label class="profile-field">
             <span class="profile-field-label">Current password</span>
             <input
               class="profile-input"
-              [class.is-invalid]="form.touched && form.hasError('oldPasswordRequired')"
+              [class.is-invalid]="passwordForm.touched && passwordForm.hasError('oldPasswordRequired')"
               type="password"
               formControlName="old_password"
               autocomplete="current-password"
@@ -97,7 +161,7 @@
             <span class="profile-field-label">New password</span>
             <input
               class="profile-input"
-              [class.is-invalid]="form.touched && form.hasError('newPasswordMinLength')"
+              [class.is-invalid]="passwordForm.touched && passwordForm.hasError('newPasswordMinLength')"
               type="password"
               formControlName="new_password"
               autocomplete="new-password"
@@ -105,10 +169,10 @@
           </label>
 
           <label class="profile-field">
-            <span class="profile-field-label">Confirm password</span>
+            <span class="profile-field-label">Confirm new password</span>
             <input
               class="profile-input"
-              [class.is-invalid]="form.touched && form.hasError('passwordMismatch')"
+              [class.is-invalid]="passwordForm.touched && (passwordForm.hasError('confirmPasswordRequired') || passwordForm.hasError('passwordMismatch'))"
               type="password"
               formControlName="confirm_password"
               autocomplete="new-password"
@@ -116,24 +180,18 @@
           </label>
         </div>
 
-        @if (form.touched && form.hasError('oldPasswordRequired')) {
-          <p class="profile-field-error">Current password is required and must be at least 8 characters.</p>
+        @if (passwordForm.touched && passwordForm.hasError('oldPasswordRequired')) {
+          <p class="profile-field-error">Current password is required and must be at least 6 characters.</p>
         }
-        @if (form.touched && form.hasError('newPasswordMinLength')) {
-          <p class="profile-field-error">New password must be at least 8 characters.</p>
+        @if (passwordForm.touched && passwordForm.hasError('newPasswordMinLength')) {
+          <p class="profile-field-error">New password must be at least 6 characters.</p>
         }
-        @if (form.touched && form.hasError('passwordMismatch')) {
-          <p class="profile-field-error">Confirm password must match new password.</p>
+        @if (passwordForm.touched && passwordForm.hasError('confirmPasswordRequired')) {
+          <p class="profile-field-error">Please confirm the new password.</p>
         }
-      </section>
-    }
-
-    @if (isEditing()) {
-      <div class="profile-actions profile-actions--bottom">
-        <app-button variant="ghost" type="button" (pressed)="cancelEdit()">Cancel</app-button>
-        <app-button type="button" [disabled]="isSaving()" ariaLabel="Save profile changes" (pressed)="save()">
-          {{ isSaving() ? 'Saving...' : 'Save changes' }}
-        </app-button>
+        @if (passwordForm.touched && passwordForm.hasError('passwordMismatch')) {
+          <p class="profile-field-error">Confirmation password must match the new password.</p>
+        }
       </div>
     }
   </form>
