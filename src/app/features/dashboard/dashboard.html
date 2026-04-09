@@ -3,14 +3,75 @@
     <p class="dashboard-alert">{{ errorMessage() }}</p>
   }
 
-  <section class="dashboard-card content-surface content-section">
-    <div class="content-section-header">
-      <div class="content-section-heading">
-        <h2 class="content-section-title">Server health</h2>
-        <p class="content-section-copy">Checks the API host, database, and cache responsiveness in one place.</p>
-      </div>
+  <section class="dashboard-layout" aria-label="Dashboard overview widgets">
+    <article class="dashboard-panel dashboard-panel--chart">
+      <header class="dashboard-panel-header">
+        <div>
+          <p class="dashboard-panel-kicker">Project pulse</p>
+          <h2 class="dashboard-panel-title">New user activity</h2>
+        </div>
 
-      <div class="dashboard-header-meta">
+        <div class="dashboard-range-switch" role="group" aria-label="New users range">
+          <button
+            class="dashboard-range-button"
+            type="button"
+            [class.is-active]="selectedUsersRange() === 7"
+            (click)="setUsersRange(7)"
+          >
+            7 days
+          </button>
+          <button
+            class="dashboard-range-button"
+            type="button"
+            [class.is-active]="selectedUsersRange() === 30"
+            (click)="setUsersRange(30)"
+          >
+            30 days
+          </button>
+        </div>
+      </header>
+
+      <section class="dashboard-chart-card">
+        <div class="dashboard-chart-topline">
+          <div class="dashboard-chart-topline-item dashboard-chart-topline-item--primary">
+            <span class="dashboard-chart-topline-label">Total new users</span>
+            <strong>{{ totalUsers(selectedUsersData()) }}</strong>
+          </div>
+
+          <div class="dashboard-chart-topline-item">
+            <span class="dashboard-chart-topline-label">Average</span>
+            <strong>{{ averageUsers(selectedUsersData()) }}/day</strong>
+          </div>
+
+          <div class="dashboard-chart-topline-item">
+            <span class="dashboard-chart-topline-label">Window</span>
+            <strong>Last {{ selectedUsersRange() }} days</strong>
+          </div>
+        </div>
+
+        <div class="dashboard-chart-stage">
+          <div class="dashboard-chart-spotlight" aria-hidden="true"></div>
+
+          <div class="dashboard-chart-shell">
+            <canvas
+              baseChart
+              class="dashboard-chart"
+              [type]="usersChartType"
+              [data]="usersChartData()"
+              [options]="usersChartOptions()"
+            ></canvas>
+          </div>
+        </div>
+      </section>
+    </article>
+
+    <article class="dashboard-panel dashboard-panel--health">
+      <header class="dashboard-panel-header dashboard-panel-header--health">
+        <div>
+          <p class="dashboard-panel-kicker">Global server health</p>
+          <h2 class="dashboard-panel-title">Healthcheck</h2>
+        </div>
+
         <button class="dashboard-refresh" type="button" [disabled]="isLoading()" (click)="loadHealth()">
           @if (isLoading()) {
             Refreshing...
@@ -18,68 +79,73 @@
             Refresh
           }
         </button>
+      </header>
 
-        @if (health(); as currentHealth) {
-          <span
-            class="dashboard-status-badge"
-            [class.dashboard-status-badge--healthy]="isHealthy(currentHealth.status)"
-            [class.dashboard-status-badge--unhealthy]="!isHealthy(currentHealth.status)"
-          >
-            {{ currentHealth.status }}
-          </span>
-        }
-      </div>
-    </div>
+      @if (isLoading() && !health()) {
+        <div class="dashboard-state dashboard-state--panel">Loading latest health snapshot...</div>
+      } @else if (health(); as currentHealth) {
+        <section class="dashboard-health-card">
+          <div class="dashboard-health-overview">
+            <div>
+              <span class="dashboard-health-label">Status</span>
+              <h3
+                class="dashboard-health-value"
+                [class.dashboard-health-value--healthy]="isHealthy(currentHealth.status)"
+                [class.dashboard-health-value--unhealthy]="!isHealthy(currentHealth.status)"
+              >
+                {{ currentHealth.status }}
+              </h3>
+            </div>
 
-    @if (isLoading() && !health()) {
-      <div class="dashboard-state">Loading latest health snapshot...</div>
-    } @else if (health(); as currentHealth) {
-      <div class="dashboard-summary-grid">
-        <article class="dashboard-summary-tile">
-          <span class="dashboard-summary-label">Version</span>
-          <strong>{{ currentHealth.version }}</strong>
-        </article>
+            <span
+              class="dashboard-status-badge"
+              [class.dashboard-status-badge--healthy]="isHealthy(currentHealth.status)"
+              [class.dashboard-status-badge--unhealthy]="!isHealthy(currentHealth.status)"
+            >
+              {{ isHealthy(currentHealth.status) ? 'All systems online' : 'Attention required' }}
+            </span>
+          </div>
 
-        <article class="dashboard-summary-tile">
-          <span class="dashboard-summary-label">Last check</span>
-          <strong>{{ formatTimestamp(currentHealth.timestamp) }}</strong>
-        </article>
+          <div class="dashboard-health-meta">
+            <div class="dashboard-health-meta-item">
+              <span>Version</span>
+              <strong>{{ currentHealth.version }}</strong>
+            </div>
+            <div class="dashboard-health-meta-item">
+              <span>Last check</span>
+              <strong>{{ formatTimestamp(currentHealth.timestamp) }}</strong>
+            </div>
+            <div class="dashboard-health-meta-item">
+              <span>Uptime</span>
+              <strong>{{ formatUptime(currentHealth.uptime) }}</strong>
+            </div>
+          </div>
 
-        <article class="dashboard-summary-tile">
-          <span class="dashboard-summary-label">Uptime</span>
-          <strong>{{ formatUptime(currentHealth.uptime) }}</strong>
-        </article>
-      </div>
+          <div class="dashboard-service-list">
+            @for (service of currentHealth.services; track service.service) {
+              <article class="dashboard-service-item">
+                <div class="dashboard-service-main">
+                  <div>
+                    <p class="dashboard-service-name">{{ serviceLabel(service) }}</p>
+                    <p class="dashboard-service-response">{{ service.response_time }}</p>
+                  </div>
 
-      <div class="dashboard-services">
-        <div class="dashboard-services-header">
-          <h3>Services</h3>
-          <span>{{ currentHealth.services.length }} monitored</span>
-        </div>
-
-        <div class="dashboard-service-list">
-          @for (service of currentHealth.services; track service.service) {
-            <article class="dashboard-service-item">
-              <div class="dashboard-service-main">
-                <div>
-                  <p class="dashboard-service-name">{{ serviceLabel(service) }}</p>
-                  <p class="dashboard-service-response">Response time: {{ service.response_time }}</p>
+                  <span
+                    class="dashboard-service-status"
+                    [class.dashboard-service-status--healthy]="isHealthy(service.status)"
+                    [class.dashboard-service-status--unhealthy]="!isHealthy(service.status)"
+                  >
+                    <span class="dashboard-service-status-dot"></span>
+                    {{ service.status }}
+                  </span>
                 </div>
-
-                <span
-                  class="dashboard-service-status"
-                  [class.dashboard-service-status--healthy]="isHealthy(service.status)"
-                  [class.dashboard-service-status--unhealthy]="!isHealthy(service.status)"
-                >
-                  {{ service.status }}
-                </span>
-              </div>
-            </article>
-          }
-        </div>
-      </div>
-    } @else {
-      <div class="dashboard-state">No health data available yet.</div>
-    }
+              </article>
+            }
+          </div>
+        </section>
+      } @else {
+        <div class="dashboard-state dashboard-state--panel">No health data available yet.</div>
+      }
+    </article>
   </section>
 </app-page-shell>
