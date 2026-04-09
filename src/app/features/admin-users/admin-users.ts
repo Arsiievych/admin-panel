@@ -1,7 +1,9 @@
 import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { finalize } from 'rxjs';
 import {
+  AdminUserDetails,
   AdminUser,
   AdminUsersEmailVerifiedFilter,
   AdminUsersOrder,
@@ -9,6 +11,7 @@ import {
   AdminUsersStatusFilter,
 } from '../../core/models/admin-users.models';
 import { AdminUsersService } from '../../core/services/admin-users.service';
+import { AuthService } from '../../core/services/auth.service';
 import { PageShell } from '../../shared/ui/page-shell/page-shell';
 
 @Component({
@@ -19,6 +22,7 @@ import { PageShell } from '../../shared/ui/page-shell/page-shell';
 })
 export class AdminUsers implements OnInit, OnDestroy {
   private readonly adminUsersService = inject(AdminUsersService);
+  private readonly authService = inject(AuthService);
   private readonly route = inject(ActivatedRoute);
   private searchTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -37,6 +41,43 @@ export class AdminUsers implements OnInit, OnDestroy {
   readonly filtersOpen = signal(false);
   readonly isLoading = signal(false);
   readonly errorMessage = signal<string | null>(null);
+  readonly selectedUserDetails = signal<AdminUserDetails | null>(null);
+  readonly isDetailsOpen = signal(false);
+  readonly isDetailsLoading = signal(false);
+  readonly detailsErrorMessage = signal<string | null>(null);
+  readonly activeDetailsTab = signal<'general' | 'legion' | 'inventory'>('general');
+  readonly canViewDetails = computed(() => {
+    const role = this.authService.profile()?.role;
+
+    return role === 'ADMIN' || role === 'SUPER_ADMIN';
+  });
+  readonly appliedFilters = computed(() => {
+    const filters: Array<{ label: string; value: string }> = [];
+    const roleFilter = this.roleFilter();
+    const statusFilter = this.statusFilter();
+    const emailVerifiedFilter = this.emailVerifiedFilter();
+
+    if (this.search()) {
+      filters.push({ label: 'Search', value: this.search() });
+    }
+
+    if (roleFilter) {
+      filters.push({ label: 'Role', value: this.formatRole(roleFilter) });
+    }
+
+    if (statusFilter) {
+      filters.push({ label: 'Status', value: this.formatStatus(statusFilter) });
+    }
+
+    if (emailVerifiedFilter) {
+      filters.push({
+        label: 'Email',
+        value: emailVerifiedFilter === 'true' ? 'Verified' : 'Not verified',
+      });
+    }
+
+    return filters;
+  });
 
   readonly rangeLabel = computed(() => {
     const total = this.total();
@@ -133,6 +174,57 @@ export class AdminUsers implements OnInit, OnDestroy {
     this.loadUsers();
   }
 
+  openDetails(userId: number): void {
+    if (!this.canViewDetails()) {
+      this.detailsErrorMessage.set('User details are available only for Admin and Super Admin accounts.');
+      this.isDetailsOpen.set(true);
+      this.selectedUserDetails.set(null);
+      this.activeDetailsTab.set('general');
+      return;
+    }
+
+    this.isDetailsOpen.set(true);
+    this.activeDetailsTab.set('general');
+    this.selectedUserDetails.set(null);
+    this.detailsErrorMessage.set(null);
+    this.isDetailsLoading.set(true);
+
+    this.adminUsersService
+      .getUserDetails(userId)
+      .pipe(finalize(() => this.isDetailsLoading.set(false)))
+      .subscribe({
+        next: (response) => {
+          this.selectedUserDetails.set(response.data);
+        },
+        error: (error: unknown) => {
+          const status = error instanceof HttpErrorResponse ? error.status : 0;
+
+          if (status === 403) {
+            this.detailsErrorMessage.set('User details are available only for Admin and Super Admin accounts.');
+            return;
+          }
+
+          if (status === 404) {
+            this.detailsErrorMessage.set('This user no longer exists.');
+            return;
+          }
+
+          this.detailsErrorMessage.set('Unable to load user details.');
+        },
+      });
+  }
+
+  closeDetails(): void {
+    this.isDetailsOpen.set(false);
+    this.detailsErrorMessage.set(null);
+    this.selectedUserDetails.set(null);
+    this.activeDetailsTab.set('general');
+  }
+
+  setDetailsTab(tab: 'general' | 'legion' | 'inventory'): void {
+    this.activeDetailsTab.set(tab);
+  }
+
   private loadUsers(): void {
     this.isLoading.set(true);
     this.errorMessage.set(null);
@@ -193,5 +285,36 @@ export class AdminUsers implements OnInit, OnDestroy {
     }
 
     return undefined;
+  }
+
+  private formatRole(value: Exclude<AdminUsersRoleFilter, ''>): string {
+    return value.toLowerCase().replace('_', ' ').replace(/\b\w/g, (char) => char.toUpperCase());
+  }
+
+  private formatStatus(value: Exclude<AdminUsersStatusFilter, ''>): string {
+    return value.replace('_', ' ').replace(/\b\w/g, (char) => char.toUpperCase());
+  }
+
+  formatValue(value: string | number | boolean | null): string {
+    if (value === null || value === '') {
+      return '—';
+    }
+
+    if (typeof value === 'boolean') {
+      return value ? 'Yes' : 'No';
+    }
+
+    return String(value);
+  }
+
+  formatDate(value: string | null): string {
+    if (!value) {
+      return '—';
+    }
+
+    return new Intl.DateTimeFormat('en-GB', {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    }).format(new Date(value));
   }
 }

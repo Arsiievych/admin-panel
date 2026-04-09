@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { AdminUsersRequest, AdminUsersResponse } from '../models/admin-users.models';
+import { AdminUserDetailsResponse, AdminUsersRequest, AdminUsersResponse } from '../models/admin-users.models';
 import { ApiService } from './api.service';
 
 @Injectable({ providedIn: 'root' })
@@ -18,5 +18,9 @@ export class AdminUsersService {
         ...(params.search ? { search: params.search } : {}),
       },
     });
+  }
+
+  getUserDetails(id: number) {
+    return this.api.get<AdminUserDetailsResponse>(`users/${id}`);
   }
 }

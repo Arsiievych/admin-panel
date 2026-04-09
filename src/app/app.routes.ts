@@ -22,7 +22,13 @@ export const routes: Routes = [
             {
                 path: '',
                 pathMatch: 'full',
-                redirectTo: 'manage-users',
+                redirectTo: 'dashboard',
+            },
+            {
+                path: 'dashboard',
+                title: 'Dashboard',
+                data: { title: 'Dashboard' },
+                loadComponent: () => import('./features/dashboard/dashboard').then((m) => m.Dashboard),
             },
             {
                 path: 'manage-users',

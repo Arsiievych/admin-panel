@@ -75,6 +75,17 @@
       <p class="admin-users-alert">{{ errorMessage() }}</p>
     }
 
+    @if (appliedFilters().length) {
+      <div class="admin-users-applied-filters" aria-label="Applied filters">
+        @for (filter of appliedFilters(); track filter.label) {
+          <span class="admin-users-filter-chip">
+            <span class="admin-users-filter-chip-label">{{ filter.label }}:</span>
+            <span>{{ filter.value }}</span>
+          </span>
+        }
+      </div>
+    }
+
     <div class="admin-users-table-region">
       <table class="admin-users-table">
         <colgroup>
@@ -152,7 +163,15 @@
                   </span>
                 </td>
                 <td class="admin-users-badge-cell">
-                  <button class="admin-users-button admin-users-button--details" type="button">Details</button>
+                  <button
+                    class="admin-users-button admin-users-button--details"
+                    type="button"
+                    [disabled]="!canViewDetails()"
+                    [title]="canViewDetails() ? 'Open user details' : 'Available only for Admin and Super Admin'"
+                    (click)="openDetails(user.id)"
+                  >
+                    Details
+                  </button>
                 </td>
               </tr>
             } @empty {
@@ -180,4 +199,91 @@
       </button>
     </footer>
   </section>
+
+  @if (isDetailsOpen()) {
+    <div class="admin-users-modal-backdrop" (click)="closeDetails()">
+      <section class="admin-users-modal" aria-label="User details" (click)="$event.stopPropagation()">
+        <header class="admin-users-modal-header">
+          <div>
+            <p class="admin-users-modal-eyebrow">User Details</p>
+            <h2 class="admin-users-modal-title">
+              @if (selectedUserDetails(); as user) {
+                {{ user.nickname || user.email }}
+              } @else {
+                User
+              }
+            </h2>
+          </div>
+
+          <button class="admin-users-icon-button" type="button" aria-label="Close details" (click)="closeDetails()">
+            <i class="fi fi-rr-cross-small" aria-hidden="true"></i>
+          </button>
+        </header>
+
+        <nav class="admin-users-modal-tabs" aria-label="User details sections">
+          <button
+            class="admin-users-modal-tab"
+            type="button"
+            [class.is-active]="activeDetailsTab() === 'general'"
+            (click)="setDetailsTab('general')"
+          >
+            General
+          </button>
+          <button
+            class="admin-users-modal-tab"
+            type="button"
+            [class.is-active]="activeDetailsTab() === 'legion'"
+            (click)="setDetailsTab('legion')"
+          >
+            Legion
+          </button>
+          <button
+            class="admin-users-modal-tab"
+            type="button"
+            [class.is-active]="activeDetailsTab() === 'inventory'"
+            (click)="setDetailsTab('inventory')"
+          >
+            Inventory
+          </button>
+        </nav>
+
+        <div class="admin-users-modal-body">
+          @if (isDetailsLoading()) {
+            <div class="admin-users-modal-empty">Loading details...</div>
+          } @else if (detailsErrorMessage()) {
+            <p class="admin-users-alert">{{ detailsErrorMessage() }}</p>
+          } @else if (selectedUserDetails(); as user) {
+            @if (activeDetailsTab() === 'general') {
+              <div class="admin-users-details-grid">
+                <div class="admin-users-detail-item"><span>ID</span><strong>{{ user.id }}</strong></div>
+                <div class="admin-users-detail-item"><span>Role</span><strong>{{ formatValue(user.role) }}</strong></div>
+                <div class="admin-users-detail-item"><span>Nickname</span><strong>{{ formatValue(user.nickname) }}</strong></div>
+                <div class="admin-users-detail-item"><span>Email</span><strong>{{ formatValue(user.email) }}</strong></div>
+                <div class="admin-users-detail-item"><span>Email verified at</span><strong>{{ formatDate(user.email_verified_at) }}</strong></div>
+                <div class="admin-users-detail-item"><span>Status</span><strong>{{ formatValue(user.status) }}</strong></div>
+                <div class="admin-users-detail-item"><span>Rank</span><strong>{{ formatValue(user.rank) }}</strong></div>
+                <div class="admin-users-detail-item"><span>Language</span><strong>{{ formatValue(user.lang) }}</strong></div>
+                <div class="admin-users-detail-item admin-users-detail-item--wide"><span>Signature</span><strong>{{ formatValue(user.signature) }}</strong></div>
+                <div class="admin-users-detail-item"><span>Legacy Firebase ID</span><strong>{{ formatValue(user.legacy_firebase_id) }}</strong></div>
+                <div class="admin-users-detail-item"><span>Free change used</span><strong>{{ formatValue(user.profile_free_change_used) }}</strong></div>
+                <div class="admin-users-detail-item"><span>Paid change credits</span><strong>{{ formatValue(user.profile_paid_change_credits) }}</strong></div>
+                <div class="admin-users-detail-item"><span>Flag ID</span><strong>{{ formatValue(user.profile_flag_id) }}</strong></div>
+                <div class="admin-users-detail-item"><span>Deleted at</span><strong>{{ formatDate(user.deleted_at) }}</strong></div>
+                <div class="admin-users-detail-item"><span>Restore until</span><strong>{{ formatDate(user.restore_until) }}</strong></div>
+                <div class="admin-users-detail-item"><span>Anonymized at</span><strong>{{ formatDate(user.anonymized_at) }}</strong></div>
+                <div class="admin-users-detail-item"><span>Global chat muted until</span><strong>{{ formatDate(user.global_chat_muted_until) }}</strong></div>
+                <div class="admin-users-detail-item"><span>Personal top 100 count</span><strong>{{ formatValue(user.personal_top_100_count) }}</strong></div>
+                <div class="admin-users-detail-item"><span>Clan top 50 count</span><strong>{{ formatValue(user.clan_top_50_count) }}</strong></div>
+                <div class="admin-users-detail-item"><span>Wallet EXP</span><strong>{{ user.wallet_balances.exp }}</strong></div>
+                <div class="admin-users-detail-item"><span>Wallet Funds</span><strong>{{ user.wallet_balances.funds }}</strong></div>
+                <div class="admin-users-detail-item"><span>Wallet Gems</span><strong>{{ user.wallet_balances.gems }}</strong></div>
+              </div>
+            } @else {
+              <div class="admin-users-modal-empty">No data available yet.</div>
+            }
+          }
+        </div>
+      </section>
+    </div>
+  }
 </app-page-shell>
