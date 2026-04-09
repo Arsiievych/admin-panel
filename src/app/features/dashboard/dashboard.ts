@@ -15,6 +15,19 @@ interface MetricPoint {
   value: number;
 }
 
+interface GeneralInfoStat {
+  label: string;
+  value: string;
+  helper: 'All time' | 'Current' | 'Today';
+  emphasis?: 'live';
+}
+
+interface GeneralInfoStatus {
+  label: string;
+  value: string;
+  tone: 'healthy' | 'warning';
+}
+
 @Component({
   selector: 'app-dashboard',
   imports: [PageShell, BaseChartDirective],
@@ -30,6 +43,7 @@ export class Dashboard implements OnInit {
   readonly errorMessage = signal<string | null>(null);
   readonly selectedUsersRange = signal<DashboardRange>(7);
   readonly selectedLegionsRange = signal<DashboardRange>(7);
+  readonly selectedActiveUsersRange = signal<DashboardRange>(7);
   readonly selectedMatchesRange = signal<MatchesRange>(7);
   readonly newUsers7Days: MetricPoint[] = [
     { label: 'Apr 3', fullLabel: 'April 3', value: 14 },
@@ -208,6 +222,76 @@ export class Dashboard implements OnInit {
     { label: 'Apr 8', fullLabel: 'April 8', value: 198 },
     { label: 'Apr 9', fullLabel: 'April 9', value: 208 },
   ];
+  readonly activeUsers7Days: MetricPoint[] = [
+    { label: 'Apr 3', fullLabel: 'April 3', value: 5210 },
+    { label: 'Apr 4', fullLabel: 'April 4', value: 5634 },
+    { label: 'Apr 5', fullLabel: 'April 5', value: 5482 },
+    { label: 'Apr 6', fullLabel: 'April 6', value: 6071 },
+    { label: 'Apr 7', fullLabel: 'April 7', value: 6318 },
+    { label: 'Apr 8', fullLabel: 'April 8', value: 5984 },
+    { label: 'Apr 9', fullLabel: 'April 9', value: 6642 },
+  ];
+  readonly activeUsers30Days: MetricPoint[] = [
+    { label: 'Mar 11', fullLabel: 'March 11', value: 4112 },
+    { label: 'Mar 12', fullLabel: 'March 12', value: 4298 },
+    { label: 'Mar 13', fullLabel: 'March 13', value: 4386 },
+    { label: 'Mar 14', fullLabel: 'March 14', value: 4521 },
+    { label: 'Mar 15', fullLabel: 'March 15', value: 4462 },
+    { label: 'Mar 16', fullLabel: 'March 16', value: 4695 },
+    { label: 'Mar 17', fullLabel: 'March 17', value: 4581 },
+    { label: 'Mar 18', fullLabel: 'March 18', value: 4822 },
+    { label: 'Mar 19', fullLabel: 'March 19', value: 4898 },
+    { label: 'Mar 20', fullLabel: 'March 20', value: 5055 },
+    { label: 'Mar 21', fullLabel: 'March 21', value: 5126 },
+    { label: 'Mar 22', fullLabel: 'March 22', value: 5212 },
+    { label: 'Mar 23', fullLabel: 'March 23', value: 5349 },
+    { label: 'Mar 24', fullLabel: 'March 24', value: 5298 },
+    { label: 'Mar 25', fullLabel: 'March 25', value: 5481 },
+    { label: 'Mar 26', fullLabel: 'March 26', value: 5564 },
+    { label: 'Mar 27', fullLabel: 'March 27', value: 5423 },
+    { label: 'Mar 28', fullLabel: 'March 28', value: 5714 },
+    { label: 'Mar 29', fullLabel: 'March 29', value: 5661 },
+    { label: 'Mar 30', fullLabel: 'March 30', value: 5823 },
+    { label: 'Mar 31', fullLabel: 'March 31', value: 5974 },
+    { label: 'Apr 1', fullLabel: 'April 1', value: 5892 },
+    { label: 'Apr 2', fullLabel: 'April 2', value: 6025 },
+    { label: 'Apr 3', fullLabel: 'April 3', value: 6188 },
+    { label: 'Apr 4', fullLabel: 'April 4', value: 6271 },
+    { label: 'Apr 5', fullLabel: 'April 5', value: 6114 },
+    { label: 'Apr 6', fullLabel: 'April 6', value: 6482 },
+    { label: 'Apr 7', fullLabel: 'April 7', value: 6593 },
+    { label: 'Apr 8', fullLabel: 'April 8', value: 6418 },
+    { label: 'Apr 9', fullLabel: 'April 9', value: 6824 },
+  ];
+  readonly activeUsers1Year: MetricPoint[] = [
+    { label: 'May', fullLabel: 'May', value: 112_400 },
+    { label: 'Jun', fullLabel: 'June', value: 118_200 },
+    { label: 'Jul', fullLabel: 'July', value: 126_500 },
+    { label: 'Aug', fullLabel: 'August', value: 131_800 },
+    { label: 'Sep', fullLabel: 'September', value: 127_300 },
+    { label: 'Oct', fullLabel: 'October', value: 139_600 },
+    { label: 'Nov', fullLabel: 'November', value: 144_900 },
+    { label: 'Dec', fullLabel: 'December', value: 153_700 },
+    { label: 'Jan', fullLabel: 'January', value: 161_400 },
+    { label: 'Feb', fullLabel: 'February', value: 156_800 },
+    { label: 'Mar', fullLabel: 'March', value: 168_200 },
+    { label: 'Apr', fullLabel: 'April', value: 173_900 },
+  ];
+  readonly generalInfoStats: GeneralInfoStat[] = [
+    { label: 'Total Users', value: '284.5K', helper: 'All time' },
+    { label: 'Online Now', value: '18.4K', helper: 'Current', emphasis: 'live' },
+    { label: 'Active Users', value: '62.1K', helper: 'Today' },
+    { label: 'Total Legions', value: '14.9K', helper: 'All time' },
+    { label: 'Active Legions', value: '1,248', helper: 'Today' },
+    { label: 'Active Matches', value: '2,416', helper: 'Current', emphasis: 'live' },
+    { label: 'Matches Played', value: '18.9K', helper: 'Today' },
+    { label: 'Chat Messages', value: '146.3K', helper: 'Today' },
+  ];
+  readonly generalInfoStatuses: GeneralInfoStatus[] = [
+    { label: 'Muted Users Now', value: '24', tone: 'warning' },
+    { label: 'Domination Active', value: 'On', tone: 'healthy' },
+    { label: 'Diamonds Forever', value: 'On', tone: 'healthy' },
+  ];
   readonly selectedUsersData = computed(() =>
     this.selectedUsersRange() === 7
       ? this.newUsers7Days
@@ -221,6 +305,13 @@ export class Dashboard implements OnInit {
       : this.selectedLegionsRange() === 30
         ? this.legionsCreated30Days
         : this.legionsCreated1Year
+  );
+  readonly selectedActiveUsersData = computed(() =>
+    this.selectedActiveUsersRange() === 7
+      ? this.activeUsers7Days
+      : this.selectedActiveUsersRange() === 30
+        ? this.activeUsers30Days
+        : this.activeUsers1Year
   );
   readonly selectedMatchesData = computed(() =>
     this.selectedMatchesRange() === 1
@@ -240,6 +331,12 @@ export class Dashboard implements OnInit {
   );
   readonly legionsChartOptions = computed<ChartOptions<'line'>>(() =>
     this.buildChartOptions(this.selectedLegionsData(), this.selectedLegionsRange(), 'legions created')
+  );
+  readonly activeUsersChartData = computed<ChartConfiguration<'line'>['data']>(() =>
+    this.buildChartData(this.selectedActiveUsersData(), this.selectedActiveUsersRange())
+  );
+  readonly activeUsersChartOptions = computed<ChartOptions<'line'>>(() =>
+    this.buildChartOptions(this.selectedActiveUsersData(), this.selectedActiveUsersRange(), 'active users')
   );
   readonly matchesChartData = computed<ChartConfiguration<'line'>['data']>(() =>
     this.buildChartData(this.selectedMatchesData(), this.selectedMatchesRange())
@@ -280,7 +377,7 @@ export class Dashboard implements OnInit {
       return 'Unknown';
     }
 
-    return new Intl.DateTimeFormat(undefined, {
+    return new Intl.DateTimeFormat('en-US', {
       dateStyle: 'medium',
       timeStyle: 'short',
     }).format(date);
@@ -327,24 +424,24 @@ export class Dashboard implements OnInit {
     this.selectedLegionsRange.set(range);
   }
 
+  setActiveUsersRange(range: DashboardRange): void {
+    this.selectedActiveUsersRange.set(range);
+  }
+
   setMatchesRange(range: MatchesRange): void {
     this.selectedMatchesRange.set(range);
   }
 
-  matchesWindowLabel(): string {
-    return this.selectedMatchesRange() === 1 ? 'Today' : `Last ${this.selectedMatchesRange()} days`;
-  }
-
-  activityWindowLabel(range: DashboardRange): string {
-    return range === 365 ? 'Last 12 months' : `Last ${range} days`;
-  }
-
   activityAverageLabel(range: DashboardRange): string {
-    return range === 365 ? 'Average month' : 'Average day';
+    return range === 365 ? 'Avg. per month' : 'Avg. per day';
   }
 
   matchesAverageLabel(): string {
-    return this.selectedMatchesRange() === 1 ? 'Average hour' : 'Average day';
+    return this.selectedMatchesRange() === 1 ? 'Avg. per hour' : 'Avg. per day';
+  }
+
+  activeUsersAverageLabel(): string {
+    return this.selectedActiveUsersRange() === 365 ? 'Avg. per month' : 'Avg. per day';
   }
 
   totalUsers(points: MetricPoint[]): number {

@@ -1,307 +1,385 @@
-<app-page-shell title="Dashboard">
-  @if (errorMessage()) {
-    <p class="dashboard-alert">{{ errorMessage() }}</p>
-  }
+<app-page-shell [title]="'Dashboard'">
+    @if (errorMessage()) {
+        <p class="dashboard-alert">{{ errorMessage() }}</p>
+    }
 
-  <section class="dashboard-layout" aria-label="Dashboard overview widgets">
-    <article class="dashboard-panel dashboard-panel--chart">
-      <header class="dashboard-panel-header">
-        <div>
-          <p class="dashboard-panel-kicker">Project pulse</p>
-          <h2 class="dashboard-panel-title">New user activity</h2>
-        </div>
+    <section class="dashboard-layout" aria-label="Dashboard overview widgets">
+        <article class="dashboard-panel dashboard-panel--health">
+            <header class="dashboard-panel-header dashboard-panel-header--health">
+                <h2 class="dashboard-panel-title">Server Health</h2>
 
-        <div class="dashboard-range-switch" role="group" aria-label="New users range">
-          <button
-            class="dashboard-range-button"
-            type="button"
-            [class.is-active]="selectedUsersRange() === 7"
-            (click)="setUsersRange(7)"
-          >
-            7 days
-          </button>
-          <button
-            class="dashboard-range-button"
-            type="button"
-            [class.is-active]="selectedUsersRange() === 30"
-            (click)="setUsersRange(30)"
-          >
-            30 days
-          </button>
-          <button
-            class="dashboard-range-button"
-            type="button"
-            [class.is-active]="selectedUsersRange() === 365"
-            (click)="setUsersRange(365)"
-          >
-            1 year
-          </button>
-        </div>
-      </header>
+                <button class="dashboard-refresh" type="button" [disabled]="isLoading()" (click)="loadHealth()">
+                    @if (isLoading()) {
+                        Refreshing...
+                    } @else {
+                        Refresh
+                    }
+                </button>
+            </header>
 
-      <section class="dashboard-chart-card">
-        <div class="dashboard-chart-topline">
-          <div class="dashboard-chart-topline-item dashboard-chart-topline-item--primary">
-            <span class="dashboard-chart-topline-label">Total new users</span>
-            <strong>{{ totalUsers(selectedUsersData()) }}</strong>
-          </div>
+            @if (isLoading() && !health()) {
+                <div class="dashboard-state dashboard-state--panel">Loading latest health snapshot...</div>
+            } @else if (health(); as currentHealth) {
+                <section class="dashboard-health-card">
+                    <div class="dashboard-health-row">
+                        <div class="dashboard-health-overview">
+                            <div class="dashboard-health-overview-copy">
+                                <span class="dashboard-health-label">Overall status</span>
+                                <h3
+                                        class="dashboard-health-value"
+                                        [class.dashboard-health-value--healthy]="isHealthy(currentHealth.status)"
+                                        [class.dashboard-health-value--unhealthy]="!isHealthy(currentHealth.status)"
+                                >
+                                    {{ currentHealth.status }}
+                                </h3>
+                            </div>
 
-          <div class="dashboard-chart-topline-item">
-            <span class="dashboard-chart-topline-label">{{ activityAverageLabel(selectedUsersRange()) }}</span>
-            <strong>{{ averageUsers(selectedUsersData()) }}</strong>
-          </div>
+                            <span
+                                    class="dashboard-status-badge"
+                                    [class.dashboard-status-badge--healthy]="isHealthy(currentHealth.status)"
+                                    [class.dashboard-status-badge--unhealthy]="!isHealthy(currentHealth.status)"
+                            >
+                {{ isHealthy(currentHealth.status) ? 'Systems online' : 'Action needed' }}
+              </span>
+                        </div>
 
-          <div class="dashboard-chart-topline-item">
-            <span class="dashboard-chart-topline-label">Window</span>
-            <strong>{{ activityWindowLabel(selectedUsersRange()) }}</strong>
-          </div>
-        </div>
+                        <div class="dashboard-health-meta-card">
+                            <div class="dashboard-health-meta-item">
+                                <span>Version</span>
+                                <strong>{{ currentHealth.version }}</strong>
+                            </div>
+                        </div>
 
-        <div class="dashboard-chart-stage">
-          <div class="dashboard-chart-spotlight" aria-hidden="true"></div>
+                        <div class="dashboard-health-meta-card">
+                            <div class="dashboard-health-meta-item">
+                                <span>Last checked</span>
+                                <strong>{{ formatTimestamp(currentHealth.timestamp) }}</strong>
+                            </div>
+                        </div>
 
-          <div class="dashboard-chart-shell">
-            <canvas
-              baseChart
-              class="dashboard-chart"
-              [type]="lineChartType"
-              [data]="usersChartData()"
-              [options]="usersChartOptions()"
-            ></canvas>
-          </div>
-        </div>
-      </section>
-    </article>
+                        <div class="dashboard-health-meta-card">
+                            <div class="dashboard-health-meta-item">
+                                <span>Uptime</span>
+                                <strong>{{ formatUptime(currentHealth.uptime) }}</strong>
+                            </div>
+                        </div>
 
-    <article class="dashboard-panel dashboard-panel--health">
-      <header class="dashboard-panel-header dashboard-panel-header--health">
-        <div>
-          <p class="dashboard-panel-kicker">Global server health</p>
-          <h2 class="dashboard-panel-title">Healthcheck</h2>
-        </div>
+                        @for (service of currentHealth.services; track service.service) {
+                            <article class="dashboard-service-item">
+                                <div class="dashboard-service-main">
+                                    <div>
+                                        <p class="dashboard-service-name">{{ serviceLabel(service) }}</p>
+                                        <p class="dashboard-service-response">{{ service.response_time }}</p>
+                                    </div>
 
-        <button class="dashboard-refresh" type="button" [disabled]="isLoading()" (click)="loadHealth()">
-          @if (isLoading()) {
-            Refreshing...
-          } @else {
-            Refresh
-          }
-        </button>
-      </header>
-
-      @if (isLoading() && !health()) {
-        <div class="dashboard-state dashboard-state--panel">Loading latest health snapshot...</div>
-      } @else if (health(); as currentHealth) {
-        <section class="dashboard-health-card">
-          <div class="dashboard-health-overview">
-            <div class="dashboard-health-overview-copy">
-              <span class="dashboard-health-label">Status</span>
-              <h3
-                class="dashboard-health-value"
-                [class.dashboard-health-value--healthy]="isHealthy(currentHealth.status)"
-                [class.dashboard-health-value--unhealthy]="!isHealthy(currentHealth.status)"
-              >
-                {{ currentHealth.status }}
-              </h3>
-            </div>
-
-            <span
-              class="dashboard-status-badge"
-              [class.dashboard-status-badge--healthy]="isHealthy(currentHealth.status)"
-              [class.dashboard-status-badge--unhealthy]="!isHealthy(currentHealth.status)"
-            >
-              {{ isHealthy(currentHealth.status) ? 'All systems online' : 'Attention required' }}
-            </span>
-          </div>
-
-          <div class="dashboard-health-content">
-            <div class="dashboard-health-meta">
-              <div class="dashboard-health-meta-card">
-                <div class="dashboard-health-meta-item">
-                  <span>Version</span>
-                  <strong>{{ currentHealth.version }}</strong>
-                </div>
-              </div>
-              <div class="dashboard-health-meta-card">
-                <div class="dashboard-health-meta-item">
-                  <span>Last check</span>
-                  <strong>{{ formatTimestamp(currentHealth.timestamp) }}</strong>
-                </div>
-              </div>
-              <div class="dashboard-health-meta-card">
-                <div class="dashboard-health-meta-item">
-                  <span>Uptime</span>
-                  <strong>{{ formatUptime(currentHealth.uptime) }}</strong>
-                </div>
-              </div>
-            </div>
-
-            <div class="dashboard-service-list">
-              @for (service of currentHealth.services; track service.service) {
-                <article class="dashboard-service-item">
-                  <div class="dashboard-service-main">
-                    <div>
-                      <p class="dashboard-service-name">{{ serviceLabel(service) }}</p>
-                      <p class="dashboard-service-response">{{ service.response_time }}</p>
+                                    <span
+                                            class="dashboard-service-status"
+                                            [class.dashboard-service-status--healthy]="isHealthy(service.status)"
+                                            [class.dashboard-service-status--unhealthy]="!isHealthy(service.status)"
+                                    >
+                    <span class="dashboard-service-status-dot"></span>
+                                        {{ service.status }}
+                  </span>
+                                </div>
+                            </article>
+                        }
                     </div>
+                </section>
+            } @else {
+                <div class="dashboard-state dashboard-state--panel">No health data available yet.</div>
+            }
+        </article>
 
-                    <span
-                      class="dashboard-service-status"
-                      [class.dashboard-service-status--healthy]="isHealthy(service.status)"
-                      [class.dashboard-service-status--unhealthy]="!isHealthy(service.status)"
-                    >
-                      <span class="dashboard-service-status-dot"></span>
-                      {{ service.status }}
-                    </span>
-                  </div>
-                </article>
-              }
+        <article class="dashboard-panel dashboard-panel--general-info">
+            <header class="dashboard-panel-header">
+                <h2 class="dashboard-panel-title">General Info</h2>
+            </header>
+
+            <div class="dashboard-general-grid" aria-label="Platform overview metrics">
+                @for (stat of generalInfoStats; track stat.label) {
+                    <article class="dashboard-general-stat"
+                             [class.dashboard-general-stat--live]="stat.emphasis === 'live'">
+                        <span>{{ stat.label }}</span>
+                        <strong>{{ stat.value }}</strong>
+                        <small>{{ stat.helper }}</small>
+                    </article>
+                }
             </div>
-          </div>
-        </section>
-      } @else {
-        <div class="dashboard-state dashboard-state--panel">No health data available yet.</div>
-      }
-    </article>
-  </section>
 
-  <section class="dashboard-secondary-grid" aria-label="Additional dashboard charts">
-    <article class="dashboard-panel dashboard-panel--compact">
-      <header class="dashboard-panel-header">
-        <div>
-          <p class="dashboard-panel-kicker">Community pulse</p>
-          <h2 class="dashboard-panel-title">Legions created</h2>
-        </div>
+            <div class="dashboard-general-statuses" aria-label="Platform status indicators">
+                @for (status of generalInfoStatuses; track status.label) {
+                    <div
+                            class="dashboard-general-status-pill"
+                            [class.dashboard-general-status-pill--healthy]="status.tone === 'healthy'"
+                            [class.dashboard-general-status-pill--warning]="status.tone === 'warning'"
+                    >
+                        <span>{{ status.label }}</span>
+                        <strong>{{ status.value }}</strong>
+                    </div>
+                }
+            </div>
+        </article>
+    </section>
 
-        <div class="dashboard-range-switch" role="group" aria-label="Legions created range">
-          <button
-            class="dashboard-range-button"
-            type="button"
-            [class.is-active]="selectedLegionsRange() === 7"
-            (click)="setLegionsRange(7)"
-          >
-            7 days
-          </button>
-          <button
-            class="dashboard-range-button"
-            type="button"
-            [class.is-active]="selectedLegionsRange() === 30"
-            (click)="setLegionsRange(30)"
-          >
-            30 days
-          </button>
-          <button
-            class="dashboard-range-button"
-            type="button"
-            [class.is-active]="selectedLegionsRange() === 365"
-            (click)="setLegionsRange(365)"
-          >
-            1 year
-          </button>
-        </div>
-      </header>
+    <section class="dashboard-secondary-grid" aria-label="Additional dashboard charts">
+        <article class="dashboard-panel dashboard-panel--chart dashboard-panel--chart-surface">
+            <div class="dashboard-chart-topbar">
+                <div class="dashboard-chart-heading">
+                    <h2 class="dashboard-panel-title">New Users</h2>
+                    <span class="dashboard-chart-info" tabindex="0" aria-label="Shows how many new player accounts were created during the selected period.">
+                        <i class="fi fi-rr-info" aria-hidden="true"></i>
+                        <span class="dashboard-chart-tooltip">Shows how many new player accounts were created during the selected period.</span>
+                    </span>
+                </div>
 
-      <section class="dashboard-chart-card">
-        <div class="dashboard-chart-topline">
-          <div class="dashboard-chart-topline-item dashboard-chart-topline-item--primary">
-            <span class="dashboard-chart-topline-label">Total legions created</span>
-            <strong>{{ totalUsers(selectedLegionsData()) }}</strong>
-          </div>
+                <div class="dashboard-range-switch" role="group" aria-label="New users time range">
+                    <button
+                            class="dashboard-range-button"
+                            type="button"
+                            [class.is-active]="selectedUsersRange() === 7"
+                            (click)="setUsersRange(7)"
+                    >
+                        7 days
+                    </button>
+                    <button
+                            class="dashboard-range-button"
+                            type="button"
+                            [class.is-active]="selectedUsersRange() === 30"
+                            (click)="setUsersRange(30)"
+                    >
+                        30 days
+                    </button>
+                    <button
+                            class="dashboard-range-button"
+                            type="button"
+                            [class.is-active]="selectedUsersRange() === 365"
+                            (click)="setUsersRange(365)"
+                    >
+                        1 year
+                    </button>
+                </div>
+            </div>
 
-          <div class="dashboard-chart-topline-item">
-            <span class="dashboard-chart-topline-label">{{ activityAverageLabel(selectedLegionsRange()) }}</span>
-            <strong>{{ averageUsers(selectedLegionsData()) }}</strong>
-          </div>
+            <div class="dashboard-chart-stage">
+                <div class="dashboard-chart-spotlight" aria-hidden="true"></div>
 
-          <div class="dashboard-chart-topline-item">
-            <span class="dashboard-chart-topline-label">Window</span>
-            <strong>{{ activityWindowLabel(selectedLegionsRange()) }}</strong>
-          </div>
-        </div>
+                <div class="dashboard-chart-shell">
+                    <canvas
+                            baseChart
+                            class="dashboard-chart"
+                            [type]="lineChartType"
+                            [data]="usersChartData()"
+                            [options]="usersChartOptions()"
+                    ></canvas>
+                </div>
+            </div>
 
-        <div class="dashboard-chart-stage">
-          <div class="dashboard-chart-spotlight" aria-hidden="true"></div>
+            <div class="dashboard-chart-summary">
+                <div class="dashboard-chart-summary-item">
+                    <span class="dashboard-chart-summary-label">New Users Total</span>
+                    <strong>{{ totalUsers(selectedUsersData()) }}</strong>
+                </div>
 
-          <div class="dashboard-chart-shell">
-            <canvas
-              baseChart
-              class="dashboard-chart"
-              [type]="lineChartType"
-              [data]="legionsChartData()"
-              [options]="legionsChartOptions()"
-            ></canvas>
-          </div>
-        </div>
-      </section>
-    </article>
+                <div class="dashboard-chart-summary-item">
+                    <span class="dashboard-chart-summary-label">{{ activityAverageLabel(selectedUsersRange()) }}</span>
+                    <strong>{{ averageUsers(selectedUsersData()) }}</strong>
+                </div>
+            </div>
+        </article>
 
-    <article class="dashboard-panel dashboard-panel--compact">
-      <header class="dashboard-panel-header">
-        <div>
-          <p class="dashboard-panel-kicker">Matchmaking pulse</p>
-          <h2 class="dashboard-panel-title">Matches played</h2>
-        </div>
+        <article class="dashboard-panel dashboard-panel--compact dashboard-panel--chart-surface">
+            <div class="dashboard-chart-topbar">
+                <div class="dashboard-chart-heading">
+                    <h2 class="dashboard-panel-title">Active Users</h2>
+                    <span class="dashboard-chart-info" tabindex="0" aria-label="Active users are players who opened the game and generated activity during the selected period.">
+                        <i class="fi fi-rr-info" aria-hidden="true"></i>
+                        <span class="dashboard-chart-tooltip">Active users are players who opened the game and generated activity during the selected period.</span>
+                    </span>
+                </div>
 
-        <div class="dashboard-range-switch" role="group" aria-label="Matches played range">
-          <button
-            class="dashboard-range-button"
-            type="button"
-            [class.is-active]="selectedMatchesRange() === 1"
-            (click)="setMatchesRange(1)"
-          >
-            Today
-          </button>
-          <button
-            class="dashboard-range-button"
-            type="button"
-            [class.is-active]="selectedMatchesRange() === 7"
-            (click)="setMatchesRange(7)"
-          >
-            7 days
-          </button>
-          <button
-            class="dashboard-range-button"
-            type="button"
-            [class.is-active]="selectedMatchesRange() === 30"
-            (click)="setMatchesRange(30)"
-          >
-            30 days
-          </button>
-        </div>
-      </header>
+                <div class="dashboard-range-switch" role="group" aria-label="Active users time range">
+                    <button
+                            class="dashboard-range-button"
+                            type="button"
+                            [class.is-active]="selectedActiveUsersRange() === 7"
+                            (click)="setActiveUsersRange(7)"
+                    >
+                        7 days
+                    </button>
+                    <button
+                            class="dashboard-range-button"
+                            type="button"
+                            [class.is-active]="selectedActiveUsersRange() === 30"
+                            (click)="setActiveUsersRange(30)"
+                    >
+                        30 days
+                    </button>
+                    <button
+                            class="dashboard-range-button"
+                            type="button"
+                            [class.is-active]="selectedActiveUsersRange() === 365"
+                            (click)="setActiveUsersRange(365)"
+                    >
+                        1 year
+                    </button>
+                </div>
+            </div>
 
-      <section class="dashboard-chart-card">
-        <div class="dashboard-chart-topline">
-          <div class="dashboard-chart-topline-item dashboard-chart-topline-item--primary">
-            <span class="dashboard-chart-topline-label">Total matches played</span>
-            <strong>{{ totalUsers(selectedMatchesData()) }}</strong>
-          </div>
+            <div class="dashboard-chart-stage">
+                <div class="dashboard-chart-spotlight" aria-hidden="true"></div>
 
-          <div class="dashboard-chart-topline-item">
-            <span class="dashboard-chart-topline-label">{{ matchesAverageLabel() }}</span>
-            <strong>{{ averageUsers(selectedMatchesData()) }}</strong>
-          </div>
+                <div class="dashboard-chart-shell">
+                    <canvas
+                            baseChart
+                            class="dashboard-chart"
+                            [type]="lineChartType"
+                            [data]="activeUsersChartData()"
+                            [options]="activeUsersChartOptions()"
+                    ></canvas>
+                </div>
+            </div>
 
-          <div class="dashboard-chart-topline-item">
-            <span class="dashboard-chart-topline-label">Window</span>
-            <strong>{{ matchesWindowLabel() }}</strong>
-          </div>
-        </div>
+            <div class="dashboard-chart-summary">
+                <div class="dashboard-chart-summary-item">
+                    <span class="dashboard-chart-summary-label">Active Users</span>
+                    <strong>{{ totalUsers(selectedActiveUsersData()) }}</strong>
+                </div>
 
-        <div class="dashboard-chart-stage">
-          <div class="dashboard-chart-spotlight" aria-hidden="true"></div>
+                <div class="dashboard-chart-summary-item">
+                    <span class="dashboard-chart-summary-label">{{ activeUsersAverageLabel() }}</span>
+                    <strong>{{ averageUsers(selectedActiveUsersData()) }}</strong>
+                </div>
+            </div>
+        </article>
 
-          <div class="dashboard-chart-shell">
-            <canvas
-              baseChart
-              class="dashboard-chart"
-              [type]="lineChartType"
-              [data]="matchesChartData()"
-              [options]="matchesChartOptions()"
-            ></canvas>
-          </div>
-        </div>
-      </section>
-    </article>
-  </section>
+        <article class="dashboard-panel dashboard-panel--compact dashboard-panel--chart-surface">
+            <div class="dashboard-chart-topbar">
+                <div class="dashboard-chart-heading">
+                    <h2 class="dashboard-panel-title">New Legions</h2>
+                    <span class="dashboard-chart-info" tabindex="0" aria-label="Shows how many new legions were created during the selected reporting period.">
+                        <i class="fi fi-rr-info" aria-hidden="true"></i>
+                        <span class="dashboard-chart-tooltip">Shows how many new legions were created during the selected reporting period.</span>
+                    </span>
+                </div>
+
+                <div class="dashboard-range-switch" role="group" aria-label="New legions time range">
+                    <button
+                            class="dashboard-range-button"
+                            type="button"
+                            [class.is-active]="selectedLegionsRange() === 7"
+                            (click)="setLegionsRange(7)"
+                    >
+                        7 days
+                    </button>
+                    <button
+                            class="dashboard-range-button"
+                            type="button"
+                            [class.is-active]="selectedLegionsRange() === 30"
+                            (click)="setLegionsRange(30)"
+                    >
+                        30 days
+                    </button>
+                    <button
+                            class="dashboard-range-button"
+                            type="button"
+                            [class.is-active]="selectedLegionsRange() === 365"
+                            (click)="setLegionsRange(365)"
+                    >
+                        1 year
+                    </button>
+                </div>
+            </div>
+
+            <div class="dashboard-chart-stage">
+                <div class="dashboard-chart-spotlight" aria-hidden="true"></div>
+
+                <div class="dashboard-chart-shell">
+                    <canvas
+                            baseChart
+                            class="dashboard-chart"
+                            [type]="lineChartType"
+                            [data]="legionsChartData()"
+                            [options]="legionsChartOptions()"
+                    ></canvas>
+                </div>
+            </div>
+
+            <div class="dashboard-chart-summary">
+                <div class="dashboard-chart-summary-item">
+                    <span class="dashboard-chart-summary-label">Legions Created</span>
+                    <strong>{{ totalUsers(selectedLegionsData()) }}</strong>
+                </div>
+
+                <div class="dashboard-chart-summary-item">
+                    <span class="dashboard-chart-summary-label">{{ activityAverageLabel(selectedLegionsRange()) }}</span>
+                    <strong>{{ averageUsers(selectedLegionsData()) }}</strong>
+                </div>
+            </div>
+        </article>
+
+        <article class="dashboard-panel dashboard-panel--compact dashboard-panel--chart-surface">
+            <div class="dashboard-chart-topbar">
+                <div class="dashboard-chart-heading">
+                    <h2 class="dashboard-panel-title">Matches</h2>
+                    <span class="dashboard-chart-info" tabindex="0" aria-label="Shows completed match volume for the selected time window, including hourly activity for today.">
+                        <i class="fi fi-rr-info" aria-hidden="true"></i>
+                        <span class="dashboard-chart-tooltip">Shows completed match volume for the selected time window, including hourly activity for today.</span>
+                    </span>
+                </div>
+
+                <div class="dashboard-range-switch" role="group" aria-label="Matches time range">
+                    <button
+                            class="dashboard-range-button"
+                            type="button"
+                            [class.is-active]="selectedMatchesRange() === 1"
+                            (click)="setMatchesRange(1)"
+                    >
+                        Today
+                    </button>
+                    <button
+                            class="dashboard-range-button"
+                            type="button"
+                            [class.is-active]="selectedMatchesRange() === 7"
+                            (click)="setMatchesRange(7)"
+                    >
+                        7 days
+                    </button>
+                    <button
+                            class="dashboard-range-button"
+                            type="button"
+                            [class.is-active]="selectedMatchesRange() === 30"
+                            (click)="setMatchesRange(30)"
+                    >
+                        30 days
+                    </button>
+                </div>
+            </div>
+
+            <div class="dashboard-chart-stage">
+                <div class="dashboard-chart-spotlight" aria-hidden="true"></div>
+
+                <div class="dashboard-chart-shell">
+                    <canvas
+                            baseChart
+                            class="dashboard-chart"
+                            [type]="lineChartType"
+                            [data]="matchesChartData()"
+                            [options]="matchesChartOptions()"
+                    ></canvas>
+                </div>
+            </div>
+
+            <div class="dashboard-chart-summary">
+                <div class="dashboard-chart-summary-item">
+                    <span class="dashboard-chart-summary-label">Matches Played</span>
+                    <strong>{{ totalUsers(selectedMatchesData()) }}</strong>
+                </div>
+
+                <div class="dashboard-chart-summary-item">
+                    <span class="dashboard-chart-summary-label">{{ matchesAverageLabel() }}</span>
+                    <strong>{{ averageUsers(selectedMatchesData()) }}</strong>
+                </div>
+            </div>
+        </article>
+    </section>
 </app-page-shell>
