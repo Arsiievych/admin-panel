@@ -145,7 +145,7 @@
             </tr>
           } @else {
             @for (user of users(); track user.id) {
-              <tr>
+              <tr class="admin-users-row">
                 <td class="admin-users-id">#{{ user.id }}</td>
                 <td class="admin-users-name">{{ user.nickname || 'No nickname' }}</td>
                 <td class="admin-users-email">

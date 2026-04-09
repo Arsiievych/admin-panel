@@ -362,6 +362,14 @@
   box-sizing: border-box;
 }
 
+.admin-users-row td {
+  transition: background-color 160ms ease, color 160ms ease;
+}
+
+.admin-users-row:hover td {
+  background: rgba(83, 221, 255, 0.08);
+}
+
 .admin-users-table th {
   color: rgba(189, 247, 255, 0.68);
   font-size: 0.72rem;
