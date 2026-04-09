@@ -10,28 +10,23 @@ export const authInterceptor: HttpInterceptorFn = (request, next) => {
     const authService = inject(AuthService);
     const router = inject(Router);
     const accessToken = authService.getAccessToken();
-    const requestWithAuth = shouldAttachToken(request, accessToken)
-        ? addAuthorizationHeader(request, accessToken)
-        : request;
+    const sendRequest = (token: string | null) => next(attachAuthorizationHeader(request, token));
 
-    return next(requestWithAuth).pipe(
+    if (shouldRefreshBeforeRequest(request, authService)) {
+        return getRefreshRequest(authService, router).pipe(
+            switchMap(() => sendRequest(authService.getAccessToken())),
+        );
+    }
+
+    return sendRequest(accessToken).pipe(
         catchError((error: unknown) => {
-            if (!shouldRefreshToken(error, request, accessToken)) {
+            const latestAccessToken = authService.getAccessToken();
+
+            if (!shouldRetryWithRefresh(error, request, latestAccessToken)) {
                 return throwError(() => error);
             }
 
-            refreshRequest$ ??= authService.refresh().pipe(
-                catchError((refreshError: unknown) => {
-                    logoutAndRedirect(authService, router);
-                    return throwError(() => refreshError);
-                }),
-                finalize(() => {
-                    refreshRequest$ = null;
-                }),
-                shareReplay({ bufferSize: 1, refCount: false }),
-            );
-
-            return refreshRequest$.pipe(
+            return getRefreshRequest(authService, router).pipe(
                 switchMap(() => {
                     const refreshedToken = authService.getAccessToken();
 
@@ -40,7 +35,7 @@ export const authInterceptor: HttpInterceptorFn = (request, next) => {
                         return throwError(() => error);
                     }
 
-                    return next(addAuthorizationHeader(request, refreshedToken));
+                    return sendRequest(refreshedToken);
                 }),
             );
         }),
@@ -48,10 +43,10 @@ export const authInterceptor: HttpInterceptorFn = (request, next) => {
 };
 
 function shouldAttachToken(request: HttpRequest<unknown>, accessToken: string | null): accessToken is string {
-    return !!accessToken && !isLoginRequest(request);
+    return !!accessToken && !isTokenlessAuthRequest(request);
 }
 
-function shouldRefreshToken(
+function shouldRetryWithRefresh(
     error: unknown,
     request: HttpRequest<unknown>,
     accessToken: string | null,
@@ -62,7 +57,11 @@ function shouldRefreshToken(
         && !isAuthRequest(request);
 }
 
-function addAuthorizationHeader(request: HttpRequest<unknown>, accessToken: string): HttpRequest<unknown> {
+function attachAuthorizationHeader(request: HttpRequest<unknown>, accessToken: string | null): HttpRequest<unknown> {
+    if (!shouldAttachToken(request, accessToken)) {
+        return request;
+    }
+
     return request.clone({
         setHeaders: {
             Authorization: `Bearer ${accessToken}`,
@@ -70,12 +69,31 @@ function addAuthorizationHeader(request: HttpRequest<unknown>, accessToken: stri
     });
 }
 
-function isAuthRequest(request: HttpRequest<unknown>): boolean {
-    return isLoginRequest(request) || request.url.includes('/auth/refresh');
+function shouldRefreshBeforeRequest(request: HttpRequest<unknown>, authService: AuthService): boolean {
+    return authService.shouldRefreshToken() && !isAuthRequest(request);
 }
 
-function isLoginRequest(request: HttpRequest<unknown>): boolean {
-    return request.url.includes('/auth/login');
+function isAuthRequest(request: HttpRequest<unknown>): boolean {
+    return isTokenlessAuthRequest(request) || request.url.includes('/auth/logout');
+}
+
+function isTokenlessAuthRequest(request: HttpRequest<unknown>): boolean {
+    return request.url.includes('/auth/login') || request.url.includes('/auth/refresh');
+}
+
+function getRefreshRequest(authService: AuthService, router: Router): Observable<unknown> {
+    refreshRequest$ ??= authService.refresh().pipe(
+        catchError((refreshError: unknown) => {
+            logoutAndRedirect(authService, router);
+            return throwError(() => refreshError);
+        }),
+        finalize(() => {
+            refreshRequest$ = null;
+        }),
+        shareReplay({ bufferSize: 1, refCount: false }),
+    );
+
+    return refreshRequest$;
 }
 
 function logoutAndRedirect(authService: AuthService, router: Router): void {

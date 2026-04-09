@@ -7,6 +7,7 @@ type RequestOptions = {
   baseUrl?: string;
   headers?: HttpHeaders | Record<string, string | string[]>;
   params?: HttpParams | Record<string, string | number | boolean>;
+  withCredentials?: boolean;
 };
 
 type HttpRequestOptions = Omit<RequestOptions, 'baseUrl'>;

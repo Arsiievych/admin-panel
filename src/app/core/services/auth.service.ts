@@ -36,14 +36,14 @@ export class AuthService {
     });
 
     login(payload: LoginRequest) {
-        return this.api.post<LoginResponse>('auth/login', payload).pipe(
+        return this.api.post<LoginResponse>('auth/login', payload, { withCredentials: true }).pipe(
             map((response) => this.mapLoginResponse(response)),
             tap((session) => this.setSession(session)),
         );
     }
 
     refresh() {
-        return this.api.post<RefreshResponse>('auth/refresh', {}).pipe(
+        return this.api.post<RefreshResponse>('auth/refresh', {}, { withCredentials: true }).pipe(
             map((response) => this.mapRefreshResponse(response)),
             tap((tokenData) => this.updateSessionTokens(tokenData)),
         );
@@ -64,7 +64,7 @@ export class AuthService {
     }
 
     logout() {
-        return this.api.post('auth/logout', {}).pipe(
+        return this.api.post('auth/logout', {}, { withCredentials: true }).pipe(
             finalize(() => this.clearSession()),
         );
     }
@@ -78,6 +78,10 @@ export class AuthService {
         return this.sessionSignal()?.accessToken ?? null;
     }
 
+    hasSession(): boolean {
+        return !!this.sessionSignal()?.accessToken;
+    }
+
     canAccessAdminPanel(): boolean {
         return this.isAuthenticated() && this.hasAdminAccess();
     }
@@ -86,6 +90,16 @@ export class AuthService {
         const session = this.sessionSignal();
 
         return !session || this.isSessionExpired(session);
+    }
+
+    shouldRefreshToken(bufferMs = 30_000): boolean {
+        const session = this.sessionSignal();
+
+        if (!session?.accessToken) {
+            return false;
+        }
+
+        return Date.now() >= session.expiresAt - bufferMs;
     }
 
     private setSession(session: AuthSession): void {
