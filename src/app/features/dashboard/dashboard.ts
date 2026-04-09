@@ -6,7 +6,8 @@ import { ServerHealth, ServerHealthServiceInfo } from '../../core/models/server-
 import { ServerHealthService } from '../../core/services/server-health.service';
 import { PageShell } from '../../shared/ui/page-shell/page-shell';
 
-type DashboardRange = 7 | 30;
+type DashboardRange = 7 | 30 | 365;
+type MatchesRange = 1 | DashboardRange;
 
 interface MetricPoint {
   label: string;
@@ -29,7 +30,7 @@ export class Dashboard implements OnInit {
   readonly errorMessage = signal<string | null>(null);
   readonly selectedUsersRange = signal<DashboardRange>(7);
   readonly selectedLegionsRange = signal<DashboardRange>(7);
-  readonly selectedMatchesRange = signal<DashboardRange>(7);
+  readonly selectedMatchesRange = signal<MatchesRange>(7);
   readonly newUsers7Days: MetricPoint[] = [
     { label: 'Apr 3', fullLabel: 'April 3', value: 14 },
     { label: 'Apr 4', fullLabel: 'April 4', value: 19 },
@@ -70,6 +71,20 @@ export class Dashboard implements OnInit {
     { label: 'Apr 7', fullLabel: 'April 7', value: 36 },
     { label: 'Apr 8', fullLabel: 'April 8', value: 33 },
     { label: 'Apr 9', fullLabel: 'April 9', value: 39 },
+  ];
+  readonly newUsers1Year: MetricPoint[] = [
+    { label: 'May', fullLabel: 'May', value: 312 },
+    { label: 'Jun', fullLabel: 'June', value: 356 },
+    { label: 'Jul', fullLabel: 'July', value: 401 },
+    { label: 'Aug', fullLabel: 'August', value: 438 },
+    { label: 'Sep', fullLabel: 'September', value: 392 },
+    { label: 'Oct', fullLabel: 'October', value: 465 },
+    { label: 'Nov', fullLabel: 'November', value: 512 },
+    { label: 'Dec', fullLabel: 'December', value: 584 },
+    { label: 'Jan', fullLabel: 'January', value: 621 },
+    { label: 'Feb', fullLabel: 'February', value: 548 },
+    { label: 'Mar', fullLabel: 'March', value: 676 },
+    { label: 'Apr', fullLabel: 'April', value: 704 },
   ];
   readonly legionsCreated7Days: MetricPoint[] = [
     { label: 'Apr 3', fullLabel: 'April 3', value: 3 },
@@ -112,6 +127,20 @@ export class Dashboard implements OnInit {
     { label: 'Apr 8', fullLabel: 'April 8', value: 9 },
     { label: 'Apr 9', fullLabel: 'April 9', value: 10 },
   ];
+  readonly legionsCreated1Year: MetricPoint[] = [
+    { label: 'May', fullLabel: 'May', value: 72 },
+    { label: 'Jun', fullLabel: 'June', value: 88 },
+    { label: 'Jul', fullLabel: 'July', value: 94 },
+    { label: 'Aug', fullLabel: 'August', value: 106 },
+    { label: 'Sep', fullLabel: 'September', value: 91 },
+    { label: 'Oct', fullLabel: 'October', value: 118 },
+    { label: 'Nov', fullLabel: 'November', value: 123 },
+    { label: 'Dec', fullLabel: 'December', value: 137 },
+    { label: 'Jan', fullLabel: 'January', value: 144 },
+    { label: 'Feb', fullLabel: 'February', value: 129 },
+    { label: 'Mar', fullLabel: 'March', value: 156 },
+    { label: 'Apr', fullLabel: 'April', value: 163 },
+  ];
   readonly matchesPlayed7Days: MetricPoint[] = [
     { label: 'Apr 3', fullLabel: 'April 3', value: 142 },
     { label: 'Apr 4', fullLabel: 'April 4', value: 158 },
@@ -120,6 +149,32 @@ export class Dashboard implements OnInit {
     { label: 'Apr 7', fullLabel: 'April 7', value: 183 },
     { label: 'Apr 8', fullLabel: 'April 8', value: 176 },
     { label: 'Apr 9', fullLabel: 'April 9', value: 194 },
+  ];
+  readonly matchesPlayedToday: MetricPoint[] = [
+    { label: '00:00', fullLabel: '12:00 AM', value: 4 },
+    { label: '01:00', fullLabel: '1:00 AM', value: 3 },
+    { label: '02:00', fullLabel: '2:00 AM', value: 2 },
+    { label: '03:00', fullLabel: '3:00 AM', value: 2 },
+    { label: '04:00', fullLabel: '4:00 AM', value: 3 },
+    { label: '05:00', fullLabel: '5:00 AM', value: 5 },
+    { label: '06:00', fullLabel: '6:00 AM', value: 6 },
+    { label: '07:00', fullLabel: '7:00 AM', value: 7 },
+    { label: '08:00', fullLabel: '8:00 AM', value: 9 },
+    { label: '09:00', fullLabel: '9:00 AM', value: 11 },
+    { label: '10:00', fullLabel: '10:00 AM', value: 14 },
+    { label: '11:00', fullLabel: '11:00 AM', value: 16 },
+    { label: '12:00', fullLabel: '12:00 PM', value: 18 },
+    { label: '13:00', fullLabel: '1:00 PM', value: 17 },
+    { label: '14:00', fullLabel: '2:00 PM', value: 19 },
+    { label: '15:00', fullLabel: '3:00 PM', value: 21 },
+    { label: '16:00', fullLabel: '4:00 PM', value: 18 },
+    { label: '17:00', fullLabel: '5:00 PM', value: 14 },
+    { label: '18:00', fullLabel: '6:00 PM', value: 11 },
+    { label: '19:00', fullLabel: '7:00 PM', value: 8 },
+    { label: '20:00', fullLabel: '8:00 PM', value: 6 },
+    { label: '21:00', fullLabel: '9:00 PM', value: 4 },
+    { label: '22:00', fullLabel: '10:00 PM', value: 3 },
+    { label: '23:00', fullLabel: '11:00 PM', value: 2 },
   ];
   readonly matchesPlayed30Days: MetricPoint[] = [
     { label: 'Mar 11', fullLabel: 'March 11', value: 108 },
@@ -154,13 +209,25 @@ export class Dashboard implements OnInit {
     { label: 'Apr 9', fullLabel: 'April 9', value: 208 },
   ];
   readonly selectedUsersData = computed(() =>
-    this.selectedUsersRange() === 7 ? this.newUsers7Days : this.newUsers30Days
+    this.selectedUsersRange() === 7
+      ? this.newUsers7Days
+      : this.selectedUsersRange() === 30
+        ? this.newUsers30Days
+        : this.newUsers1Year
   );
   readonly selectedLegionsData = computed(() =>
-    this.selectedLegionsRange() === 7 ? this.legionsCreated7Days : this.legionsCreated30Days
+    this.selectedLegionsRange() === 7
+      ? this.legionsCreated7Days
+      : this.selectedLegionsRange() === 30
+        ? this.legionsCreated30Days
+        : this.legionsCreated1Year
   );
   readonly selectedMatchesData = computed(() =>
-    this.selectedMatchesRange() === 7 ? this.matchesPlayed7Days : this.matchesPlayed30Days
+    this.selectedMatchesRange() === 1
+      ? this.matchesPlayedToday
+      : this.selectedMatchesRange() === 7
+        ? this.matchesPlayed7Days
+        : this.matchesPlayed30Days
   );
   readonly usersChartData = computed<ChartConfiguration<'line'>['data']>(() =>
     this.buildChartData(this.selectedUsersData(), this.selectedUsersRange())
@@ -260,8 +327,24 @@ export class Dashboard implements OnInit {
     this.selectedLegionsRange.set(range);
   }
 
-  setMatchesRange(range: DashboardRange): void {
+  setMatchesRange(range: MatchesRange): void {
     this.selectedMatchesRange.set(range);
+  }
+
+  matchesWindowLabel(): string {
+    return this.selectedMatchesRange() === 1 ? 'Today' : `Last ${this.selectedMatchesRange()} days`;
+  }
+
+  activityWindowLabel(range: DashboardRange): string {
+    return range === 365 ? 'Last 12 months' : `Last ${range} days`;
+  }
+
+  activityAverageLabel(range: DashboardRange): string {
+    return range === 365 ? 'Average month' : 'Average day';
+  }
+
+  matchesAverageLabel(): string {
+    return this.selectedMatchesRange() === 1 ? 'Average hour' : 'Average day';
   }
 
   totalUsers(points: MetricPoint[]): number {
@@ -272,7 +355,7 @@ export class Dashboard implements OnInit {
     return Math.round(this.totalUsers(points) / points.length);
   }
 
-  private buildChartData(points: MetricPoint[], range: DashboardRange): ChartConfiguration<'line'>['data'] {
+  private buildChartData(points: MetricPoint[], range: MatchesRange): ChartConfiguration<'line'>['data'] {
     return {
       labels: points.map((point) => point.label),
       datasets: [
@@ -285,9 +368,9 @@ export class Dashboard implements OnInit {
           backgroundColor: (context) => getLineFill(context),
           pointBackgroundColor: '#94f4ff',
           pointBorderColor: '#182846',
-          pointBorderWidth: range === 7 ? 2 : 1.25,
-          pointRadius: range === 7 ? 4 : 2.2,
-          pointHoverRadius: range === 7 ? 5.5 : 4,
+          pointBorderWidth: range === 1 ? 1.4 : range === 7 ? 2 : range === 365 ? 1.6 : 1.25,
+          pointRadius: range === 1 ? 2.2 : range === 7 ? 4 : range === 365 ? 2.8 : 2.2,
+          pointHoverRadius: range === 1 ? 4 : range === 7 ? 5.5 : range === 365 ? 4.6 : 4,
           pointHoverBackgroundColor: '#d7fbff',
           pointHoverBorderColor: '#182846',
           pointHoverBorderWidth: 2,
@@ -296,7 +379,7 @@ export class Dashboard implements OnInit {
     };
   }
 
-  private buildChartOptions(points: MetricPoint[], range: DashboardRange, tooltipLabel: string): ChartOptions<'line'> {
+  private buildChartOptions(points: MetricPoint[], range: MatchesRange, tooltipLabel: string): ChartOptions<'line'> {
     return {
       responsive: true,
       maintainAspectRatio: false,
@@ -354,8 +437,8 @@ export class Dashboard implements OnInit {
               size: 11,
             },
             maxRotation: 0,
-            autoSkip: range === 30,
-            maxTicksLimit: range === 30 ? 4 : 7,
+            autoSkip: range === 1 || range === 30 || range === 365,
+            maxTicksLimit: range === 1 ? 6 : range === 365 ? 12 : range === 30 ? 4 : 7,
           },
         },
         y: {

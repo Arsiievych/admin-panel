@@ -28,6 +28,14 @@
           >
             30 days
           </button>
+          <button
+            class="dashboard-range-button"
+            type="button"
+            [class.is-active]="selectedUsersRange() === 365"
+            (click)="setUsersRange(365)"
+          >
+            1 year
+          </button>
         </div>
       </header>
 
@@ -39,13 +47,13 @@
           </div>
 
           <div class="dashboard-chart-topline-item">
-            <span class="dashboard-chart-topline-label">Average</span>
-            <strong>{{ averageUsers(selectedUsersData()) }}/day</strong>
+            <span class="dashboard-chart-topline-label">{{ activityAverageLabel(selectedUsersRange()) }}</span>
+            <strong>{{ averageUsers(selectedUsersData()) }}</strong>
           </div>
 
           <div class="dashboard-chart-topline-item">
             <span class="dashboard-chart-topline-label">Window</span>
-            <strong>Last {{ selectedUsersRange() }} days</strong>
+            <strong>{{ activityWindowLabel(selectedUsersRange()) }}</strong>
           </div>
         </div>
 
@@ -86,7 +94,7 @@
       } @else if (health(); as currentHealth) {
         <section class="dashboard-health-card">
           <div class="dashboard-health-overview">
-            <div>
+            <div class="dashboard-health-overview-copy">
               <span class="dashboard-health-label">Status</span>
               <h3
                 class="dashboard-health-value"
@@ -106,41 +114,49 @@
             </span>
           </div>
 
-          <div class="dashboard-health-meta">
-            <div class="dashboard-health-meta-item">
-              <span>Version</span>
-              <strong>{{ currentHealth.version }}</strong>
-            </div>
-            <div class="dashboard-health-meta-item">
-              <span>Last check</span>
-              <strong>{{ formatTimestamp(currentHealth.timestamp) }}</strong>
-            </div>
-            <div class="dashboard-health-meta-item">
-              <span>Uptime</span>
-              <strong>{{ formatUptime(currentHealth.uptime) }}</strong>
-            </div>
-          </div>
-
-          <div class="dashboard-service-list">
-            @for (service of currentHealth.services; track service.service) {
-              <article class="dashboard-service-item">
-                <div class="dashboard-service-main">
-                  <div>
-                    <p class="dashboard-service-name">{{ serviceLabel(service) }}</p>
-                    <p class="dashboard-service-response">{{ service.response_time }}</p>
-                  </div>
-
-                  <span
-                    class="dashboard-service-status"
-                    [class.dashboard-service-status--healthy]="isHealthy(service.status)"
-                    [class.dashboard-service-status--unhealthy]="!isHealthy(service.status)"
-                  >
-                    <span class="dashboard-service-status-dot"></span>
-                    {{ service.status }}
-                  </span>
+          <div class="dashboard-health-content">
+            <div class="dashboard-health-meta">
+              <div class="dashboard-health-meta-card">
+                <div class="dashboard-health-meta-item">
+                  <span>Version</span>
+                  <strong>{{ currentHealth.version }}</strong>
                 </div>
-              </article>
-            }
+              </div>
+              <div class="dashboard-health-meta-card">
+                <div class="dashboard-health-meta-item">
+                  <span>Last check</span>
+                  <strong>{{ formatTimestamp(currentHealth.timestamp) }}</strong>
+                </div>
+              </div>
+              <div class="dashboard-health-meta-card">
+                <div class="dashboard-health-meta-item">
+                  <span>Uptime</span>
+                  <strong>{{ formatUptime(currentHealth.uptime) }}</strong>
+                </div>
+              </div>
+            </div>
+
+            <div class="dashboard-service-list">
+              @for (service of currentHealth.services; track service.service) {
+                <article class="dashboard-service-item">
+                  <div class="dashboard-service-main">
+                    <div>
+                      <p class="dashboard-service-name">{{ serviceLabel(service) }}</p>
+                      <p class="dashboard-service-response">{{ service.response_time }}</p>
+                    </div>
+
+                    <span
+                      class="dashboard-service-status"
+                      [class.dashboard-service-status--healthy]="isHealthy(service.status)"
+                      [class.dashboard-service-status--unhealthy]="!isHealthy(service.status)"
+                    >
+                      <span class="dashboard-service-status-dot"></span>
+                      {{ service.status }}
+                    </span>
+                  </div>
+                </article>
+              }
+            </div>
           </div>
         </section>
       } @else {
@@ -174,6 +190,14 @@
           >
             30 days
           </button>
+          <button
+            class="dashboard-range-button"
+            type="button"
+            [class.is-active]="selectedLegionsRange() === 365"
+            (click)="setLegionsRange(365)"
+          >
+            1 year
+          </button>
         </div>
       </header>
 
@@ -185,13 +209,13 @@
           </div>
 
           <div class="dashboard-chart-topline-item">
-            <span class="dashboard-chart-topline-label">Average</span>
-            <strong>{{ averageUsers(selectedLegionsData()) }}/day</strong>
+            <span class="dashboard-chart-topline-label">{{ activityAverageLabel(selectedLegionsRange()) }}</span>
+            <strong>{{ averageUsers(selectedLegionsData()) }}</strong>
           </div>
 
           <div class="dashboard-chart-topline-item">
             <span class="dashboard-chart-topline-label">Window</span>
-            <strong>Last {{ selectedLegionsRange() }} days</strong>
+            <strong>{{ activityWindowLabel(selectedLegionsRange()) }}</strong>
           </div>
         </div>
 
@@ -222,6 +246,14 @@
           <button
             class="dashboard-range-button"
             type="button"
+            [class.is-active]="selectedMatchesRange() === 1"
+            (click)="setMatchesRange(1)"
+          >
+            Today
+          </button>
+          <button
+            class="dashboard-range-button"
+            type="button"
             [class.is-active]="selectedMatchesRange() === 7"
             (click)="setMatchesRange(7)"
           >
@@ -246,13 +278,13 @@
           </div>
 
           <div class="dashboard-chart-topline-item">
-            <span class="dashboard-chart-topline-label">Average</span>
-            <strong>{{ averageUsers(selectedMatchesData()) }}/day</strong>
+            <span class="dashboard-chart-topline-label">{{ matchesAverageLabel() }}</span>
+            <strong>{{ averageUsers(selectedMatchesData()) }}</strong>
           </div>
 
           <div class="dashboard-chart-topline-item">
             <span class="dashboard-chart-topline-label">Window</span>
-            <strong>Last {{ selectedMatchesRange() }} days</strong>
+            <strong>{{ matchesWindowLabel() }}</strong>
           </div>
         </div>
 

@@ -1,0 +1,166 @@
+<app-page-shell title="Support Tickets">
+  <section class="support-workspace" aria-label="Support ticket workspace">
+    <section class="support-list-panel">
+      <header class="support-toolbar">
+        <div class="support-search">
+          <i class="fi fi-rr-search" aria-hidden="true"></i>
+          <input
+            type="search"
+            placeholder="Search by ticket ID, user, email, or subject"
+            [value]="searchTerm()"
+            (input)="updateSearchTerm($any($event.target).value)"
+          />
+        </div>
+
+        <label class="support-filter support-filter--inline">
+          <span>Filter by status</span>
+          <select [value]="statusFilter()" (change)="updateStatusFilter($any($event.target).value)">
+            @for (status of statuses; track status) {
+              <option [value]="status">{{ status }}</option>
+            }
+          </select>
+        </label>
+      </header>
+
+      <div class="support-table-head" aria-hidden="true">
+        <span>Ticket</span>
+        <span>Status</span>
+        <span>Priority</span>
+        <span>Date</span>
+      </div>
+
+      <div class="support-ticket-list">
+        @for (ticket of filteredTickets(); track ticket.id) {
+          <div
+            class="support-ticket-row"
+            [class.support-ticket-row--selected]="selectedTicketId() === ticket.id"
+            (click)="selectTicket(ticket.id)"
+          >
+            <div class="support-ticket-main">
+              <div class="support-ticket-user">
+                <span class="support-avatar">{{ initials(ticket.userName) }}</span>
+                <div class="support-ticket-copy">
+                  <strong>#{{ ticket.id }} · {{ ticket.userName }}</strong>
+                  <span>{{ ticket.subject }}</span>
+                </div>
+              </div>
+              <span
+                class="support-status-badge"
+                [class.support-status-badge--open]="statusClass(ticket.status) === 'open'"
+                [class.support-status-badge--in-progress]="statusClass(ticket.status) === 'in-progress'"
+                [class.support-status-badge--pending]="statusClass(ticket.status) === 'pending'"
+                [class.support-status-badge--resolved]="statusClass(ticket.status) === 'resolved'"
+                [class.support-status-badge--closed]="statusClass(ticket.status) === 'closed'"
+              >
+                {{ ticket.status }}
+              </span>
+              <span
+                class="support-priority-badge"
+                [class.support-priority-badge--low]="priorityClass(ticket.priority) === 'low'"
+                [class.support-priority-badge--medium]="priorityClass(ticket.priority) === 'medium'"
+                [class.support-priority-badge--high]="priorityClass(ticket.priority) === 'high'"
+              >
+                {{ ticket.priority }}
+              </span>
+              <span class="support-ticket-date">{{ ticket.date }}</span>
+            </div>
+          </div>
+        } @empty {
+          <div class="support-empty-state">
+            <strong>No tickets found</strong>
+            <span>Adjust the search term or status filter.</span>
+          </div>
+        }
+      </div>
+    </section>
+
+    <aside class="support-detail-panel">
+      @if (selectedTicket(); as ticket) {
+        <section class="support-detail-card">
+          <header class="support-detail-header">
+            <div>
+              <p class="support-eyebrow">Selected ticket</p>
+              <h2>#{{ ticket.id }} · {{ ticket.subject }}</h2>
+            </div>
+            <button type="button" class="support-icon-button" (click)="deleteSelectedTicket()">
+              <i class="fi fi-rr-trash" aria-hidden="true"></i>
+            </button>
+          </header>
+
+          <div class="support-detail-summary">
+            <div class="support-detail-user">
+              <span class="support-avatar">{{ initials(ticket.userName) }}</span>
+              <div>
+                <strong>{{ ticket.userName }}</strong>
+                <span>{{ ticket.userEmail }}</span>
+              </div>
+            </div>
+            <div class="support-detail-meta">
+              <span>{{ ticket.category }}</span>
+              <span>{{ ticket.date }}</span>
+            </div>
+          </div>
+
+          <div class="support-control-grid">
+            <label class="support-control">
+              <span>Change status</span>
+              <select [value]="ticket.status" (change)="updateSelectedTicketStatus($any($event.target).value)">
+                @for (status of statuses.slice(1); track status) {
+                  <option [value]="status">{{ status }}</option>
+                }
+              </select>
+            </label>
+
+            <label class="support-control">
+              <span>Change priority</span>
+              <select [value]="ticket.priority" (change)="updateSelectedTicketPriority($any($event.target).value)">
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+              </select>
+            </label>
+          </div>
+
+          <p class="support-eyebrow support-body-eyebrow">Ticket body</p>
+          @if (ticketBody(); as body) {
+            <article class="support-message support-message--user">
+              <header>
+                <strong>{{ body.author }}</strong>
+                <span>{{ body.role }}</span>
+                <time>{{ body.time }}</time>
+              </header>
+              <p>{{ body.message }}</p>
+            </article>
+          } @else {
+            <div class="support-empty-state support-empty-state--compact">
+              <span>No body available for this ticket.</span>
+            </div>
+          }
+        </section>
+
+        <section class="support-detail-card">
+          <p class="support-eyebrow">Reply</p>
+          <label class="support-reply-field">
+            <textarea
+              rows="5"
+              placeholder="Write a reply to the user"
+              [value]="replyDraft()"
+              (input)="updateReplyDraft($any($event.target).value)"
+            ></textarea>
+          </label>
+
+          <div class="support-reply-actions">
+            <button type="button">Send reply</button>
+          </div>
+        </section>
+      } @else {
+        <section class="support-detail-card">
+          <div class="support-empty-state support-empty-state--compact">
+            <strong>No ticket selected</strong>
+            <span>Pick a ticket from the list to review it.</span>
+          </div>
+        </section>
+      }
+    </aside>
+  </section>
+</app-page-shell>

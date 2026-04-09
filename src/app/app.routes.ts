@@ -37,6 +37,12 @@ export const routes: Routes = [
                 loadComponent: () => import('./features/chat/chat').then((m) => m.Chat),
             },
             {
+                path: 'support',
+                title: 'Support Tickets',
+                data: { title: 'Support Tickets' },
+                loadComponent: () => import('./features/support-tickets/support-tickets').then((m) => m.SupportTickets),
+            },
+            {
                 path: 'manage-users',
                 title: 'Manage Users',
                 data: { title: 'Manage Users' },
