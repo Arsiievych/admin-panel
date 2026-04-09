@@ -14,7 +14,6 @@
   grid-template-columns: var(--nav-width) minmax(0, 1fr);
   align-items: stretch;
   min-height: var(--content-min-height);
-  overflow: hidden;
 }
 
 .admin-layout::before {

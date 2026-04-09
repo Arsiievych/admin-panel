@@ -8,9 +8,7 @@
   --nav-content-inline: 0.9rem;
   display: flex;
   flex-direction: column;
-  min-height: var(--content-min-height);
-  max-height: var(--content-min-height);
-  overflow-y: auto;
+  min-height: 100%;
   padding: 1.55rem 1.05rem;
   border-right: 1px solid rgba(145, 202, 229, 0.16);
   background:
