@@ -56,7 +56,7 @@
             <canvas
               baseChart
               class="dashboard-chart"
-              [type]="usersChartType"
+              [type]="lineChartType"
               [data]="usersChartData()"
               [options]="usersChartOptions()"
             ></canvas>
@@ -146,6 +146,130 @@
       } @else {
         <div class="dashboard-state dashboard-state--panel">No health data available yet.</div>
       }
+    </article>
+  </section>
+
+  <section class="dashboard-secondary-grid" aria-label="Additional dashboard charts">
+    <article class="dashboard-panel dashboard-panel--compact">
+      <header class="dashboard-panel-header">
+        <div>
+          <p class="dashboard-panel-kicker">Community pulse</p>
+          <h2 class="dashboard-panel-title">Legions created</h2>
+        </div>
+
+        <div class="dashboard-range-switch" role="group" aria-label="Legions created range">
+          <button
+            class="dashboard-range-button"
+            type="button"
+            [class.is-active]="selectedLegionsRange() === 7"
+            (click)="setLegionsRange(7)"
+          >
+            7 days
+          </button>
+          <button
+            class="dashboard-range-button"
+            type="button"
+            [class.is-active]="selectedLegionsRange() === 30"
+            (click)="setLegionsRange(30)"
+          >
+            30 days
+          </button>
+        </div>
+      </header>
+
+      <section class="dashboard-chart-card">
+        <div class="dashboard-chart-topline">
+          <div class="dashboard-chart-topline-item dashboard-chart-topline-item--primary">
+            <span class="dashboard-chart-topline-label">Total legions created</span>
+            <strong>{{ totalUsers(selectedLegionsData()) }}</strong>
+          </div>
+
+          <div class="dashboard-chart-topline-item">
+            <span class="dashboard-chart-topline-label">Average</span>
+            <strong>{{ averageUsers(selectedLegionsData()) }}/day</strong>
+          </div>
+
+          <div class="dashboard-chart-topline-item">
+            <span class="dashboard-chart-topline-label">Window</span>
+            <strong>Last {{ selectedLegionsRange() }} days</strong>
+          </div>
+        </div>
+
+        <div class="dashboard-chart-stage">
+          <div class="dashboard-chart-spotlight" aria-hidden="true"></div>
+
+          <div class="dashboard-chart-shell">
+            <canvas
+              baseChart
+              class="dashboard-chart"
+              [type]="lineChartType"
+              [data]="legionsChartData()"
+              [options]="legionsChartOptions()"
+            ></canvas>
+          </div>
+        </div>
+      </section>
+    </article>
+
+    <article class="dashboard-panel dashboard-panel--compact">
+      <header class="dashboard-panel-header">
+        <div>
+          <p class="dashboard-panel-kicker">Matchmaking pulse</p>
+          <h2 class="dashboard-panel-title">Matches played</h2>
+        </div>
+
+        <div class="dashboard-range-switch" role="group" aria-label="Matches played range">
+          <button
+            class="dashboard-range-button"
+            type="button"
+            [class.is-active]="selectedMatchesRange() === 7"
+            (click)="setMatchesRange(7)"
+          >
+            7 days
+          </button>
+          <button
+            class="dashboard-range-button"
+            type="button"
+            [class.is-active]="selectedMatchesRange() === 30"
+            (click)="setMatchesRange(30)"
+          >
+            30 days
+          </button>
+        </div>
+      </header>
+
+      <section class="dashboard-chart-card">
+        <div class="dashboard-chart-topline">
+          <div class="dashboard-chart-topline-item dashboard-chart-topline-item--primary">
+            <span class="dashboard-chart-topline-label">Total matches played</span>
+            <strong>{{ totalUsers(selectedMatchesData()) }}</strong>
+          </div>
+
+          <div class="dashboard-chart-topline-item">
+            <span class="dashboard-chart-topline-label">Average</span>
+            <strong>{{ averageUsers(selectedMatchesData()) }}/day</strong>
+          </div>
+
+          <div class="dashboard-chart-topline-item">
+            <span class="dashboard-chart-topline-label">Window</span>
+            <strong>Last {{ selectedMatchesRange() }} days</strong>
+          </div>
+        </div>
+
+        <div class="dashboard-chart-stage">
+          <div class="dashboard-chart-spotlight" aria-hidden="true"></div>
+
+          <div class="dashboard-chart-shell">
+            <canvas
+              baseChart
+              class="dashboard-chart"
+              [type]="lineChartType"
+              [data]="matchesChartData()"
+              [options]="matchesChartOptions()"
+            ></canvas>
+          </div>
+        </div>
+      </section>
     </article>
   </section>
 </app-page-shell>
