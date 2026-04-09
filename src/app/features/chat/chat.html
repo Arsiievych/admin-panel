@@ -1,0 +1,159 @@
+<app-page-shell title="Chat">
+  <section class="chat-workspace" aria-label="Global game chat workspace">
+    <section class="chat-stream">
+      <header class="chat-stream-header">
+        <div>
+          <p class="chat-eyebrow">Global room</p>
+          <h2>Global game chat</h2>
+        </div>
+
+        <div class="chat-stream-status">
+          <span>28.4k online</span>
+          <span class="chat-live-indicator">Live sync</span>
+        </div>
+      </header>
+
+      <div class="chat-message-list">
+        @for (message of messages(); track message.id) {
+          <button
+            class="chat-message"
+            type="button"
+            [class.chat-message--selected]="selectedMessageId() === message.id"
+            [class.chat-message--user]="roleClass(message.role) === 'user'"
+            [class.chat-message--moderator]="roleClass(message.role) === 'moderator'"
+            [class.chat-message--admin]="roleClass(message.role) === 'admin'"
+            [class.chat-message--super-admin]="roleClass(message.role) === 'super-admin'"
+            (click)="selectMessage(message.id)"
+          >
+            <div
+              class="chat-avatar"
+              [class.chat-avatar--user]="roleClass(message.role) === 'user'"
+              [class.chat-avatar--moderator]="roleClass(message.role) === 'moderator'"
+              [class.chat-avatar--admin]="roleClass(message.role) === 'admin'"
+              [class.chat-avatar--super-admin]="roleClass(message.role) === 'super-admin'"
+            >
+              {{ initials(message.userName) }}
+            </div>
+
+            <div class="chat-message-body">
+              <header class="chat-message-meta">
+                <strong>{{ message.userName }}</strong>
+                <span
+                  class="chat-role-pill"
+                  [class.chat-role-pill--user]="roleClass(message.role) === 'user'"
+                  [class.chat-role-pill--moderator]="roleClass(message.role) === 'moderator'"
+                  [class.chat-role-pill--admin]="roleClass(message.role) === 'admin'"
+                  [class.chat-role-pill--super-admin]="roleClass(message.role) === 'super-admin'"
+                >
+                  {{ message.role }}
+                </span>
+                <span>{{ message.time }}</span>
+                @if (isMuted(message.userId)) {
+                  <span class="chat-muted-flag">Muted</span>
+                }
+              </header>
+              <p>{{ message.message }}</p>
+            </div>
+          </button>
+        }
+      </div>
+
+      <footer class="chat-composer">
+        <label class="chat-composer-field">
+          <div class="chat-composer-row">
+            <input type="text" placeholder="Type a moderator update, announcement, or incident note..." disabled />
+            <button type="button" class="chat-send-button">Send</button>
+          </div>
+        </label>
+      </footer>
+    </section>
+
+    <aside class="chat-inspector">
+      <section class="chat-inspector-card">
+        <p class="chat-eyebrow">Selected message</p>
+        <div class="chat-selection-card">
+          <div class="chat-selection-header">
+            <div
+              class="chat-avatar"
+              [class.chat-avatar--user]="roleClass(selectedMessage().role) === 'user'"
+              [class.chat-avatar--moderator]="roleClass(selectedMessage().role) === 'moderator'"
+              [class.chat-avatar--admin]="roleClass(selectedMessage().role) === 'admin'"
+              [class.chat-avatar--super-admin]="roleClass(selectedMessage().role) === 'super-admin'"
+            >
+              {{ initials(selectedMessage().userName) }}
+            </div>
+            <div class="chat-selection-meta">
+              <strong>{{ selectedMessage().userName }}</strong>
+              <span
+                class="chat-role-pill"
+                [class.chat-role-pill--user]="roleClass(selectedMessage().role) === 'user'"
+                [class.chat-role-pill--moderator]="roleClass(selectedMessage().role) === 'moderator'"
+                [class.chat-role-pill--admin]="roleClass(selectedMessage().role) === 'admin'"
+                [class.chat-role-pill--super-admin]="roleClass(selectedMessage().role) === 'super-admin'"
+              >
+                {{ selectedMessage().role }}
+              </span>
+              <span>{{ selectedMessage().time }}</span>
+            </div>
+            <button
+              type="button"
+              class="chat-icon-button"
+              [disabled]="!canDeleteSelectedMessage()"
+              (click)="deleteSelectedMessage()"
+            >
+              Delete
+            </button>
+          </div>
+          <p>{{ selectedMessage().message }}</p>
+        </div>
+      </section>
+
+      <section class="chat-inspector-card">
+        <p class="chat-eyebrow">Select mute duration</p>
+        <div class="chat-mute-grid">
+          @for (duration of muteDurations; track duration) {
+            <button
+              class="chat-mute-button"
+              type="button"
+              [disabled]="!canMuteSelectedMessage()"
+              (click)="muteSelectedUser(duration.hours)"
+            >
+              {{ muteDurationLabel(duration.hours) }}
+            </button>
+          }
+        </div>
+        @if (!canMuteSelectedMessage()) {
+          <p class="chat-empty-copy">Only User messages support mute and delete actions.</p>
+        }
+      </section>
+
+      <section class="chat-inspector-card">
+        <p class="chat-eyebrow">Muted users</p>
+        <div class="chat-muted-header" aria-hidden="true">
+          <span>User</span>
+          <span>Time left</span>
+          <span>Action</span>
+        </div>
+        <div class="chat-muted-list">
+          @for (user of activeMutedUsers(); track user.userId) {
+            <div class="chat-muted-row">
+              <div class="chat-muted-user">
+                <span class="chat-muted-avatar">{{ initials(user.userName) }}</span>
+                <strong>{{ user.userName }}</strong>
+                <span class="chat-muted-role">{{ user.role }}</span>
+              </div>
+              <div class="chat-muted-time">
+                <span>{{ timeLeftLabel(user.mutedUntil) }}</span>
+              </div>
+              <div class="chat-muted-row-actions">
+                <button type="button" class="chat-inline-button" (click)="unmuteUser(user.userId)">Unmute</button>
+              </div>
+            </div>
+          } @empty {
+            <p class="chat-empty-copy">No muted users right now.</p>
+          }
+        </div>
+      </section>
+    </aside>
+  </section>
+</app-page-shell>

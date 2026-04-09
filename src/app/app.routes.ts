@@ -31,6 +31,12 @@ export const routes: Routes = [
                 loadComponent: () => import('./features/dashboard/dashboard').then((m) => m.Dashboard),
             },
             {
+                path: 'chat',
+                title: 'Chat',
+                data: { title: 'Chat' },
+                loadComponent: () => import('./features/chat/chat').then((m) => m.Chat),
+            },
+            {
                 path: 'manage-users',
                 title: 'Manage Users',
                 data: { title: 'Manage Users' },
