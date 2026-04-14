@@ -1,8 +1,21 @@
-<nav class="navigation-shell" aria-label="Main navigation">
+<nav class="navigation-shell" [class.navigation-shell--collapsed]="collapsed()" aria-label="Main navigation">
+  <div class="navigation-topbar">
+      <button
+        class="navigation-collapse-button"
+        type="button"
+        [attr.aria-pressed]="collapsed()"
+        [attr.aria-label]="collapsed() ? 'Expand side navigation' : 'Collapse side navigation'"
+        [title]="collapsed() ? 'Expand menu' : 'Collapse menu'"
+        (click)="onToggleCollapse()"
+      >
+        <i class="fi" [class.fi-rr-menu-burger]="collapsed()" [class.fi-rr-angle-double-small-left]="!collapsed()"></i>
+      </button>
+  </div>
   <div class="navigation-items-slot">
-      <app-navigation-item navigation-item label="Dashboard" icon="fi-rr-apps" [path]="['/dashboard']"/>
-      <app-navigation-item navigation-item label="Manage Users" icon="fi-rr-users-gear" [path]="['/manage-users']"/>
-      <app-navigation-item navigation-item label="Chat" icon="fi-rr-comment" [path]="['/chat']"/>
-      <app-navigation-item navigation-item label="Support" icon="fi-rr-life-ring" [path]="['/support']"/>
+      <app-navigation-item navigation-item [collapsed]="collapsed()" label="Dashboard" icon="fi-rr-apps" [path]="['/dashboard']"/>
+      <app-navigation-item navigation-item [collapsed]="collapsed()" label="Metrics" icon="fi-rr-chart-line-up" [path]="['/metrics']"/>
+      <app-navigation-item navigation-item [collapsed]="collapsed()" label="Manage Users" icon="fi-rr-users-gear" [path]="['/manage-users']"/>
+      <app-navigation-item navigation-item [collapsed]="collapsed()" label="Chat" icon="fi-rr-comment" [path]="['/chat']"/>
+      <app-navigation-item navigation-item [collapsed]="collapsed()" label="Support" icon="fi-rr-life-ring" [path]="['/support']"/>
   </div>
 </nav>

@@ -1,7 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { environment } from '../../../environments/environment';
-import packageJson from '../../../../package.json';
 import { Header } from './header/header';
 import { Navigation } from './navigation/navigation';
 
@@ -16,6 +14,9 @@ import { Navigation } from './navigation/navigation';
   styleUrl: './admin-layout.css',
 })
 export class AdminLayout {
-  readonly appVersion = packageJson.version;
-  readonly environmentLabel = environment.production ? 'Production' : 'Development';
+  readonly isNavCollapsed = signal(false);
+
+  toggleNav(): void {
+    this.isNavCollapsed.update((collapsed) => !collapsed);
+  }
 }

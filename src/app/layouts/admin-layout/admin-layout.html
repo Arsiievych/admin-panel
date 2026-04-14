@@ -1,14 +1,7 @@
 <app-header />
-<div class="admin-layout">
-  <app-navigation />
+<div class="admin-layout" [class.admin-layout--nav-collapsed]="isNavCollapsed()">
+  <app-navigation [collapsed]="isNavCollapsed()" (toggleCollapse)="toggleNav()" />
   <main class="admin-layout-content">
     <router-outlet />
   </main>
 </div>
-<footer class="admin-layout-footer" aria-label="Admin panel footer">
-  <span class="admin-layout-footer-brand">Admin Panel</span>
-  <div class="admin-layout-footer-meta">
-    <span>v{{ appVersion }}</span>
-    <span>{{ environmentLabel }}</span>
-  </div>
-</footer>

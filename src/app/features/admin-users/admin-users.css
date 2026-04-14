@@ -294,7 +294,7 @@
   padding: 0.85rem 0.9rem;
   border: 1px solid rgba(145, 202, 229, 0.12);
   border-radius: 0.8rem;
-  background: rgba(8, 17, 30, 0.46);
+  background: rgba(8, 17, 30, 0.42);
 }
 
 .admin-users-detail-item span {
@@ -366,10 +366,6 @@
   width: 11%;
 }
 
-.admin-users-col--details {
-  width: 10%;
-}
-
 .admin-users-table th,
 .admin-users-table td {
   padding: 0.85rem 0.75rem;
@@ -385,8 +381,16 @@
   transition: background-color 160ms ease, color 160ms ease;
 }
 
+.admin-users-row {
+  cursor: pointer;
+}
+
 .admin-users-row:hover td {
   background: rgba(83, 221, 255, 0.08);
+}
+
+.admin-users-row--disabled {
+  cursor: not-allowed;
 }
 
 .admin-users-table th {
@@ -544,4 +548,5 @@
   .admin-users-details-grid {
     grid-template-columns: 1fr;
   }
+
 }

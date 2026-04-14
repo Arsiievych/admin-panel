@@ -1,13 +1,18 @@
 <button
   class="item-button"
+  [class.item-button--collapsed]="collapsed"
   type="button"
   [routerLink]=path
   routerLinkActive="is-active"
   [routerLinkActiveOptions]="{ exact: true }"
   ariaCurrentWhenActive="page"
+  [attr.aria-label]="label"
+  [title]="collapsed ? label : null"
 >
   <span class="item-icon" aria-hidden="true">
     <i [class]="iconClass"></i>
   </span>
-  <span class="item-label">{{ label }}</span>
+  @if (!collapsed) {
+    <span class="item-label">{{ label }}</span>
+  }
 </button>

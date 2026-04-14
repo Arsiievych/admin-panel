@@ -1,15 +1,10 @@
-import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { ChartConfiguration, ChartOptions, ScriptableContext } from 'chart.js';
-import { finalize } from 'rxjs';
-import { ProjectOverview, ProjectOverviewDominationState, ProjectOverviewEventState } from '../../core/models/project-overview.models';
-import { ServerHealth, ServerHealthServiceInfo } from '../../core/models/server-health.models';
-import { ProjectOverviewService } from '../../core/services/project-overview.service';
-import { ServerHealthService } from '../../core/services/server-health.service';
+import { BaseChartDirective } from 'ng2-charts';
 import { PageShell } from '../../shared/ui/page-shell/page-shell';
 
 type DashboardRange = 7 | 30 | 365;
 type MatchesRange = 1 | DashboardRange;
-type OverviewModeKey = keyof ProjectOverview['queued_players_by_mode'];
 
 interface MetricPoint {
   label: string;
@@ -17,50 +12,14 @@ interface MetricPoint {
   value: number;
 }
 
-interface GeneralInfoStat {
-  label: string;
-  value: string;
-  helper: 'All time' | 'Current' | 'Today';
-  emphasis?: 'live';
-}
-
-interface OverviewModeMetric {
-  label: string;
-  value: string;
-}
-
-interface OverviewModeStatusCard {
-  title: string;
-  status: string;
-  tone: 'healthy' | 'warning';
-  meta: string;
-  detail: string;
-}
-
-type HealthTone = 'healthy' | 'warning' | 'unhealthy';
-
 @Component({
-  selector: 'app-dashboard',
-  imports: [PageShell],
-  templateUrl: './dashboard.html',
-  styleUrls: ['./dashboard.css'],
+  selector: 'app-metrics',
+  imports: [PageShell, BaseChartDirective],
+  templateUrl: './metrics.html',
+  styleUrl: './metrics.css',
 })
-export class Dashboard implements OnInit, OnDestroy {
-  private readonly serverHealthService = inject(ServerHealthService);
-  private readonly projectOverviewService = inject(ProjectOverviewService);
-  private autoRefreshIntervalId: number | null = null;
-  private updatedAgoIntervalId: number | null = null;
-
+export class Metrics {
   readonly lineChartType: ChartConfiguration<'line'>['type'] = 'line';
-  readonly health = signal<ServerHealth | null>(null);
-  readonly projectOverview = signal<ProjectOverview | null>(null);
-  readonly projectOverviewFetchedAt = signal<number | null>(null);
-  readonly isLoading = signal(false);
-  readonly isOverviewLoading = signal(false);
-  readonly errorMessage = signal<string | null>(null);
-  readonly overviewErrorMessage = signal<string | null>(null);
-  readonly healthDetailsExpanded = signal(false);
-  readonly now = signal(Date.now());
   readonly selectedUsersRange = signal<DashboardRange>(7);
   readonly selectedLegionsRange = signal<DashboardRange>(7);
   readonly selectedActiveUsersRange = signal<DashboardRange>(7);
@@ -297,135 +256,17 @@ export class Dashboard implements OnInit, OnDestroy {
     { label: 'Mar', fullLabel: 'March', value: 168_200 },
     { label: 'Apr', fullLabel: 'April', value: 173_900 },
   ];
-  readonly userOverviewStats = computed<GeneralInfoStat[]>(() => {
-    const overview = this.projectOverview();
-
-    if (!overview) {
-      return [];
-    }
-
-    return [
-      { label: 'Total Users', value: this.formatCount(overview.total_users), helper: 'All time' },
-      { label: 'Online Now', value: this.formatCount(overview.online_users_now), helper: 'Current', emphasis: 'live' },
-      { label: 'Active Today', value: this.formatCount(overview.active_users_today), helper: 'Today' },
-      { label: 'New Users Today', value: this.formatCount(overview.new_users_today), helper: 'Today' },
-    ];
-  });
-  readonly legionOverviewStats = computed<GeneralInfoStat[]>(() => {
-    const overview = this.projectOverview();
-
-    if (!overview) {
-      return [];
-    }
-
-    return [
-      { label: 'Total Legions', value: this.formatCount(overview.total_legions), helper: 'All time' },
-      { label: 'Active Today', value: this.formatCount(overview.legions_with_match_activity_today), helper: 'Today' },
-    ];
-  });
-  readonly matchOverviewStats = computed<GeneralInfoStat[]>(() => {
-    const overview = this.projectOverview();
-
-    if (!overview) {
-      return [];
-    }
-
-    return [
-      { label: 'Matches Played', value: this.formatCount(overview.matches_played_today), helper: 'Today' },
-      { label: 'Active Now', value: this.formatCount(overview.active_matches_now), helper: 'Current', emphasis: 'live' },
-    ];
-  });
-  readonly queueOverviewStats = computed<GeneralInfoStat[]>(() => {
-    const overview = this.projectOverview();
-
-    if (!overview) {
-      return [];
-    }
-
-    return [
-      { label: 'Players In Queue', value: this.formatCount(overview.players_in_queue_now), helper: 'Current', emphasis: 'live' },
-    ];
-  });
-  readonly activeMatchModes = computed<OverviewModeMetric[]>(() => {
-    const overview = this.projectOverview();
-
-    if (!overview) {
-      return [];
-    }
-
-    return this.modeMetrics(overview.active_matches_by_mode);
-  });
-  readonly queuedModes = computed<OverviewModeMetric[]>(() => {
-    const overview = this.projectOverview();
-
-    if (!overview) {
-      return [];
-    }
-
-    return this.modeMetrics(overview.queued_players_by_mode, 'Queue');
-  });
-  readonly modeStatusCards = computed<OverviewModeStatusCard[]>(() => {
-    const overview = this.projectOverview();
-
-    if (!overview) {
-      return [];
-    }
-
-    return [
-      {
-        title: 'Diamonds Forever',
-        status: overview.diamonds_forever.is_active ? 'Active' : 'Inactive',
-        tone: this.eventStatusTone(overview.diamonds_forever),
-        meta: overview.diamonds_forever.is_active ? 'Running now' : 'Scheduled event',
-        detail: this.eventDetail(overview.diamonds_forever, overview.timezone),
-      },
-      {
-        title: 'Domination',
-        status: overview.domination.is_active ? 'Active' : 'Inactive',
-        tone: this.eventStatusTone(overview.domination),
-        meta: `Season ${overview.domination.season_number} (${this.formatDateRange(overview.domination.season_start_at, overview.domination.season_end_at, overview.timezone)})`,
-        detail: this.eventDetail(overview.domination, overview.timezone),
-      },
-    ];
-  });
-  readonly chatAdminStats = computed<GeneralInfoStat[]>(() => {
-    const overview = this.projectOverview();
-
-    if (!overview) {
-      return [];
-    }
-
-    return [
-      { label: 'Muted Users (Chat) Now', value: this.formatCount(overview.muted_global_chat_users_now), helper: 'Current' },
-    ];
-  });
   readonly selectedUsersData = computed(() =>
-    this.selectedUsersRange() === 7
-      ? this.newUsers7Days
-      : this.selectedUsersRange() === 30
-        ? this.newUsers30Days
-        : this.newUsers1Year
+    this.selectedUsersRange() === 7 ? this.newUsers7Days : this.selectedUsersRange() === 30 ? this.newUsers30Days : this.newUsers1Year
   );
   readonly selectedLegionsData = computed(() =>
-    this.selectedLegionsRange() === 7
-      ? this.legionsCreated7Days
-      : this.selectedLegionsRange() === 30
-        ? this.legionsCreated30Days
-        : this.legionsCreated1Year
+    this.selectedLegionsRange() === 7 ? this.legionsCreated7Days : this.selectedLegionsRange() === 30 ? this.legionsCreated30Days : this.legionsCreated1Year
   );
   readonly selectedActiveUsersData = computed(() =>
-    this.selectedActiveUsersRange() === 7
-      ? this.activeUsers7Days
-      : this.selectedActiveUsersRange() === 30
-        ? this.activeUsers30Days
-        : this.activeUsers1Year
+    this.selectedActiveUsersRange() === 7 ? this.activeUsers7Days : this.selectedActiveUsersRange() === 30 ? this.activeUsers30Days : this.activeUsers1Year
   );
   readonly selectedMatchesData = computed(() =>
-    this.selectedMatchesRange() === 1
-      ? this.matchesPlayedToday
-      : this.selectedMatchesRange() === 7
-        ? this.matchesPlayed7Days
-        : this.matchesPlayed30Days
+    this.selectedMatchesRange() === 1 ? this.matchesPlayedToday : this.selectedMatchesRange() === 7 ? this.matchesPlayed7Days : this.matchesPlayed30Days
   );
   readonly usersChartData = computed<ChartConfiguration<'line'>['data']>(() =>
     this.buildChartData(this.selectedUsersData(), this.selectedUsersRange())
@@ -451,277 +292,6 @@ export class Dashboard implements OnInit, OnDestroy {
   readonly matchesChartOptions = computed<ChartOptions<'line'>>(() =>
     this.buildChartOptions(this.selectedMatchesData(), this.selectedMatchesRange(), 'matches played')
   );
-  readonly overallHealthTone = computed<HealthTone>(() => {
-    const currentHealth = this.health();
-
-    if (!currentHealth) {
-      return 'unhealthy';
-    }
-
-    if (!this.isHealthy(currentHealth.status)) {
-      return 'unhealthy';
-    }
-
-    return currentHealth.services.some((service) => this.serviceTone(service) === 'warning') ? 'warning' : 'healthy';
-  });
-
-  ngOnInit(): void {
-    this.loadHealth();
-    this.loadProjectOverview();
-    this.autoRefreshIntervalId = window.setInterval(() => {
-      this.loadHealth(true);
-      this.loadProjectOverview(true);
-    }, 60_000);
-    this.updatedAgoIntervalId = window.setInterval(() => this.now.set(Date.now()), 1_000);
-  }
-
-  ngOnDestroy(): void {
-    if (this.autoRefreshIntervalId !== null) {
-      window.clearInterval(this.autoRefreshIntervalId);
-    }
-
-    if (this.updatedAgoIntervalId !== null) {
-      window.clearInterval(this.updatedAgoIntervalId);
-    }
-  }
-
-  loadHealth(isAutoRefresh = false): void {
-    this.isLoading.set(true);
-
-    if (!isAutoRefresh) {
-      this.errorMessage.set(null);
-    }
-
-    this.serverHealthService
-      .getHealth()
-      .pipe(finalize(() => this.isLoading.set(false)))
-      .subscribe({
-        next: (response) => {
-          this.health.set(response.data);
-          this.now.set(Date.now());
-          this.errorMessage.set(null);
-        },
-        error: () => {
-          if (!this.health()) {
-            this.errorMessage.set('Unable to load server health.');
-          }
-        },
-      });
-  }
-
-  loadProjectOverview(isAutoRefresh = false): void {
-    this.isOverviewLoading.set(true);
-
-    if (!isAutoRefresh) {
-      this.overviewErrorMessage.set(null);
-    }
-
-    this.projectOverviewService
-      .getOverview()
-      .pipe(finalize(() => this.isOverviewLoading.set(false)))
-      .subscribe({
-        next: (response) => {
-          this.projectOverview.set(response.data);
-          this.projectOverviewFetchedAt.set(Date.now());
-          this.overviewErrorMessage.set(null);
-        },
-        error: () => {
-          if (!this.projectOverview()) {
-            this.overviewErrorMessage.set('Unable to load project overview.');
-          }
-        },
-      });
-  }
-
-  isHealthy(status: string): boolean {
-    return status.trim().toLowerCase() === 'healthy';
-  }
-
-  formatTimestamp(timestamp: string): string {
-    const date = new Date(timestamp);
-
-    if (Number.isNaN(date.getTime())) {
-      return 'Unknown';
-    }
-
-    return new Intl.DateTimeFormat('en-US', {
-      dateStyle: 'medium',
-      timeStyle: 'short',
-    }).format(date);
-  }
-
-  formatUptime(uptime: number): string {
-    if (!Number.isFinite(uptime) || uptime < 0) {
-      return 'Unknown';
-    }
-
-    const totalSeconds = Math.floor(uptime);
-    const days = Math.floor(totalSeconds / 86_400);
-    const hours = Math.floor((totalSeconds % 86_400) / 3_600);
-    const minutes = Math.floor((totalSeconds % 3_600) / 60);
-    const seconds = totalSeconds % 60;
-    const parts: string[] = [];
-
-    if (days) {
-      parts.push(`${days}d`);
-    }
-
-    if (hours || parts.length) {
-      parts.push(`${hours}h`);
-    }
-
-    if (minutes || parts.length) {
-      parts.push(`${minutes}m`);
-    }
-
-    parts.push(`${seconds}s`);
-
-    return parts.join(' ');
-  }
-
-  toggleHealthDetails(): void {
-    this.healthDetailsExpanded.update((expanded) => !expanded);
-  }
-
-  serviceLabel(service: ServerHealthServiceInfo): string {
-    return service.service.replace(/[_-]+/g, ' ');
-  }
-
-  overallStatusLabel(status: string): string {
-    return status.replace(/[_-]+/g, ' ').trim() || 'Unknown';
-  }
-
-  overallStatusMessage(health: ServerHealth): string {
-    const tone = this.overallHealthTone();
-
-    if (tone === 'unhealthy') {
-      return 'Action needed';
-    }
-
-    if (tone === 'warning') {
-      return 'Some services are slow';
-    }
-
-    return 'Systems online';
-  }
-
-  overallStatusSummary(health: ServerHealth): string {
-    if (health.summary_reason?.trim()) {
-      return health.summary_reason;
-    }
-
-    return this.overallStatusMessage(health);
-  }
-
-  formatUpdatedAgo(timestamp: string): string {
-    const date = new Date(timestamp);
-
-    if (Number.isNaN(date.getTime())) {
-      return 'Updated just now';
-    }
-
-    const elapsedSeconds = Math.max(0, Math.floor((this.now() - date.getTime()) / 1_000));
-
-    if (elapsedSeconds < 60) {
-      return `Updated ${elapsedSeconds}s ago`;
-    }
-
-    const elapsedMinutes = Math.floor(elapsedSeconds / 60);
-
-    if (elapsedMinutes < 60) {
-      return `Updated ${elapsedMinutes}m ago`;
-    }
-
-    const elapsedHours = Math.floor(elapsedMinutes / 60);
-
-    return `Updated ${elapsedHours}h ago`;
-  }
-
-  formatUpdatedAgoFromNow(referenceTime: number | null): string {
-    if (referenceTime === null) {
-      return 'Updated just now';
-    }
-
-    const elapsedSeconds = Math.max(0, Math.floor((this.now() - referenceTime) / 1_000));
-
-    if (elapsedSeconds < 60) {
-      return `Updated ${elapsedSeconds}s ago`;
-    }
-
-    const elapsedMinutes = Math.floor(elapsedSeconds / 60);
-
-    if (elapsedMinutes < 60) {
-      return `Updated ${elapsedMinutes}m ago`;
-    }
-
-    const elapsedHours = Math.floor(elapsedMinutes / 60);
-
-    return `Updated ${elapsedHours}h ago`;
-  }
-
-  serviceTone(service: ServerHealthServiceInfo): HealthTone {
-    if (!this.isHealthy(service.status)) {
-      return 'unhealthy';
-    }
-
-    const latency = this.parseResponseTime(service.response_time);
-
-    if (latency === null) {
-      return 'healthy';
-    }
-
-    if (latency >= 200) {
-      return 'unhealthy';
-    }
-
-    if (latency >= 100) {
-      return 'warning';
-    }
-
-    return 'healthy';
-  }
-
-  serviceStatusLabel(service: ServerHealthServiceInfo): string {
-    const tone = this.serviceTone(service);
-
-    if (tone === 'warning') {
-      return 'Warning';
-    }
-
-    return this.isHealthy(service.status) ? 'Healthy' : 'Down';
-  }
-
-  serviceLatencyLabel(service: ServerHealthServiceInfo): string {
-    const latency = this.parseResponseTime(service.response_time);
-
-    if (latency === null) {
-      return service.response_time || 'Unknown';
-    }
-
-    if (latency >= 200) {
-      return `Critical latency (${service.response_time})`;
-    }
-
-    if (latency >= 100) {
-      return `Slow response (${service.response_time})`;
-    }
-
-    return `Fast response (${service.response_time})`;
-  }
-
-  latencyThresholdLabel(service: ServerHealthServiceInfo): string {
-    const tone = this.serviceTone(service);
-
-    if (tone === 'unhealthy') {
-      return '200ms+ critical';
-    }
-
-    if (tone === 'warning') {
-      return '100ms+ warning';
-    }
-
-    return '<100ms healthy';
-  }
 
   setUsersRange(range: DashboardRange): void {
     this.selectedUsersRange.set(range);
@@ -759,106 +329,6 @@ export class Dashboard implements OnInit, OnDestroy {
     return Math.round(this.totalUsers(points) / points.length);
   }
 
-  formatCount(value: number): string {
-    return new Intl.NumberFormat('en-US').format(value);
-  }
-
-  eventStatusTone(event: ProjectOverviewEventState | ProjectOverviewDominationState): 'healthy' | 'warning' {
-    return event.is_active ? 'healthy' : 'warning';
-  }
-
-  eventDetail(event: ProjectOverviewEventState | ProjectOverviewDominationState, timezone: string): string {
-    if (event.is_active && event.current_session) {
-      return `Ends ${this.formatShortDateTime(event.current_session.end_at, timezone)}`;
-    }
-
-    if (event.next_session?.start_at) {
-      return `Next session: ${this.formatShortDateTime(event.next_session.start_at, timezone)}`;
-    }
-
-    return 'No upcoming session';
-  }
-
-  formatDateRange(startAt: string, endAt: string, timezone: string): string {
-    const start = new Date(startAt);
-    const end = new Date(endAt);
-
-    if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
-      return 'Unknown';
-    }
-
-    const formatter = new Intl.DateTimeFormat('en-US', {
-      month: 'short',
-      day: '2-digit',
-      timeZone: timezone,
-    });
-
-    return `${formatter.format(start)} - ${formatter.format(end)}`;
-  }
-
-  private formatShortTime(timestamp: string, timezone: string): string {
-    const date = new Date(timestamp);
-
-    if (Number.isNaN(date.getTime())) {
-      return 'Unknown';
-    }
-
-    const time = new Intl.DateTimeFormat('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-      timeZone: timezone,
-    }).format(date);
-
-    return `${time} ${timezone}`;
-  }
-
-  private formatShortDateTime(timestamp: string, timezone: string): string {
-    const date = new Date(timestamp);
-
-    if (Number.isNaN(date.getTime())) {
-      return 'Unknown';
-    }
-
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'short',
-      day: '2-digit',
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: false,
-      timeZone: timezone,
-    }).format(date) + ` ${timezone}`;
-  }
-
-  private modeMetrics(modes: ProjectOverview['queued_players_by_mode'], suffix?: string): OverviewModeMetric[] {
-    return (Object.entries(modes) as Array<[OverviewModeKey, number]>).map(([mode, value]) => ({
-      label: `${this.modeLabel(mode)}${suffix ? ` ${suffix}` : ''}`,
-      value: this.formatCount(value),
-    }));
-  }
-
-  private modeLabel(mode: OverviewModeKey): string {
-    switch (mode) {
-      case 'ffa':
-        return 'FFA';
-      case 'team':
-        return 'Team';
-      case 'domination':
-        return 'Domination';
-      case 'diamonds_forever':
-        return 'Diamonds Forever';
-    }
-  }
-
-  private parseResponseTime(responseTime: string): number | null {
-    const match = responseTime.match(/(\d+(?:\.\d+)?)/);
-
-    if (!match) {
-      return null;
-    }
-
-    return Number.parseFloat(match[1]);
-  }
-
   private buildChartData(points: MetricPoint[], range: MatchesRange): ChartConfiguration<'line'>['data'] {
     return {
       labels: points.map((point) => point.label),
@@ -887,18 +357,10 @@ export class Dashboard implements OnInit, OnDestroy {
     return {
       responsive: true,
       maintainAspectRatio: false,
-      animation: {
-        duration: 260,
-        easing: 'easeOutQuart',
-      },
-      interaction: {
-        intersect: false,
-        mode: 'index',
-      },
+      animation: { duration: 260, easing: 'easeOutQuart' },
+      interaction: { intersect: false, mode: 'index' },
       plugins: {
-        legend: {
-          display: false,
-        },
+        legend: { display: false },
         tooltip: {
           displayColors: false,
           backgroundColor: 'rgba(15, 24, 43, 0.94)',
@@ -907,39 +369,23 @@ export class Dashboard implements OnInit, OnDestroy {
           padding: 12,
           titleColor: '#f4f8ff',
           bodyColor: 'rgba(225, 236, 250, 0.86)',
-          titleFont: {
-            size: 12,
-            weight: 600,
-          },
-          bodyFont: {
-            size: 12,
-          },
+          titleFont: { size: 12, weight: 600 },
+          bodyFont: { size: 12 },
           callbacks: {
             label: (tooltipItem) => `${tooltipItem.parsed.y} ${tooltipLabel}`,
           },
         },
       },
       layout: {
-        padding: {
-          top: 8,
-          right: 6,
-          left: 6,
-          bottom: 0,
-        },
+        padding: { top: 8, right: 6, left: 6, bottom: 0 },
       },
       scales: {
         x: {
-          grid: {
-            display: false,
-          },
-          border: {
-            display: false,
-          },
+          grid: { display: false },
+          border: { display: false },
           ticks: {
             color: 'rgba(192, 209, 236, 0.48)',
-            font: {
-              size: 11,
-            },
+            font: { size: 11 },
             maxRotation: 0,
             autoSkip: range === 1 || range === 30 || range === 365,
             maxTicksLimit: range === 1 ? 6 : range === 365 ? 12 : range === 30 ? 4 : 7,
@@ -948,23 +394,13 @@ export class Dashboard implements OnInit, OnDestroy {
         y: {
           beginAtZero: true,
           suggestedMax: this.chartUpperBound(points),
-          grid: {
-            color: 'rgba(149, 190, 240, 0.08)',
-            drawTicks: false,
-          },
-          border: {
-            display: false,
-          },
-          ticks: {
-            display: false,
-            count: 4,
-          },
+          grid: { color: 'rgba(149, 190, 240, 0.08)', drawTicks: false },
+          border: { display: false },
+          ticks: { display: false, count: 4 },
         },
       },
       elements: {
-        line: {
-          capBezierPoints: true,
-        },
+        line: { capBezierPoints: true },
       },
     };
   }
@@ -975,7 +411,6 @@ export class Dashboard implements OnInit, OnDestroy {
 
   private chartUpperBound(points: MetricPoint[]): number {
     const maxValue = this.maxUsers(points);
-
     return Math.max(10, Math.ceil(maxValue * 1.18));
   }
 }
@@ -983,11 +418,9 @@ export class Dashboard implements OnInit, OnDestroy {
 function getLineStroke(context: ScriptableContext<'line'>): CanvasGradient | string {
   const chart = context.chart;
   const gradient = chart.ctx.createLinearGradient(0, 0, chart.chartArea?.right ?? 0, 0);
-
   gradient.addColorStop(0, '#58dfff');
   gradient.addColorStop(0.55, '#70eeff');
   gradient.addColorStop(1, '#8ef4ff');
-
   return gradient;
 }
 
@@ -1000,9 +433,8 @@ function getLineFill(context: ScriptableContext<'line'>): CanvasGradient | strin
   }
 
   const gradient = chart.ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
-
-  gradient.addColorStop(0, 'rgba(112, 232, 255, 0.34)');
+  gradient.addColorStop(0, 'rgba(112, 232, 255, 0.28)');
+  gradient.addColorStop(0.55, 'rgba(112, 232, 255, 0.11)');
   gradient.addColorStop(1, 'rgba(112, 232, 255, 0)');
-
   return gradient;
 }

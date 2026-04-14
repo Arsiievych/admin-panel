@@ -4,6 +4,7 @@ export interface ServerHealthResponse {
 
 export interface ServerHealth {
   status: string;
+  summary_reason: string;
   timestamp: string;
   version: string;
   uptime: number;

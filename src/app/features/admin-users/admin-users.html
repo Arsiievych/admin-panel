@@ -8,7 +8,7 @@
 
       <div class="admin-users-controls" aria-label="Users table controls">
         <label class="admin-users-control admin-users-control--search">
-          <span class="admin-users-search-field">
+          <span class="admin-users-search-field" [class.is-active]="!!searchDraft().trim()">
             <i class="fi fi-rr-search" aria-hidden="true"></i>
             <input
               type="search"
@@ -22,6 +22,7 @@
         <div class="admin-users-filter-wrap">
           <button
             class="admin-users-icon-button"
+            [class.is-active]="appliedFilters().length > 0"
             type="button"
             aria-label="Toggle filters"
             [attr.aria-expanded]="filtersOpen()"
@@ -78,10 +79,16 @@
     @if (appliedFilters().length) {
       <div class="admin-users-applied-filters" aria-label="Applied filters">
         @for (filter of appliedFilters(); track filter.label) {
-          <span class="admin-users-filter-chip">
+          <button
+            class="admin-users-filter-chip"
+            type="button"
+            (click)="clearAppliedFilter(filter.label)"
+            [attr.aria-label]="'Clear ' + filter.label + ' filter'"
+          >
             <span class="admin-users-filter-chip-label">{{ filter.label }}:</span>
             <span>{{ filter.value }}</span>
-          </span>
+            <i class="fi fi-rr-cross-small" aria-hidden="true"></i>
+          </button>
         }
       </div>
     }
@@ -94,7 +101,6 @@
           <col class="admin-users-col admin-users-col--email" />
           <col class="admin-users-col admin-users-col--role" />
           <col class="admin-users-col admin-users-col--status" />
-          <col class="admin-users-col admin-users-col--details" />
         </colgroup>
         <thead>
           <tr>
@@ -135,17 +141,25 @@
                 ></span>
               </button>
             </th>
-            <th scope="col" class="admin-users-details-head">Details</th>
           </tr>
         </thead>
         <tbody>
           @if (isLoading()) {
             <tr>
-              <td colspan="6" class="admin-users-empty">Loading users...</td>
+              <td colspan="5" class="admin-users-empty">Loading users...</td>
             </tr>
           } @else {
             @for (user of users(); track user.id) {
-              <tr class="admin-users-row">
+              <tr
+                class="admin-users-row"
+                [class.admin-users-row--disabled]="!canViewDetails()"
+                [attr.tabindex]="canViewDetails() ? 0 : null"
+                [attr.aria-disabled]="!canViewDetails()"
+                [title]="canViewDetails() ? 'Open user details' : 'Available only for Admin and Super Admin'"
+                (click)="canViewDetails() && openDetails(user.id)"
+                (keydown.enter)="canViewDetails() && openDetails(user.id)"
+                (keydown.space)="canViewDetails() && openDetails(user.id); $event.preventDefault()"
+              >
                 <td class="admin-users-id">#{{ user.id }}</td>
                 <td class="admin-users-name">{{ user.nickname || 'No nickname' }}</td>
                 <td class="admin-users-email">
@@ -162,21 +176,10 @@
                     {{ user.is_active ? 'Active' : 'Inactive' }}
                   </span>
                 </td>
-                <td class="admin-users-badge-cell">
-                  <button
-                    class="admin-users-button admin-users-button--details"
-                    type="button"
-                    [disabled]="!canViewDetails()"
-                    [title]="canViewDetails() ? 'Open user details' : 'Available only for Admin and Super Admin'"
-                    (click)="openDetails(user.id)"
-                  >
-                    Details
-                  </button>
-                </td>
               </tr>
             } @empty {
               <tr>
-                <td colspan="6" class="admin-users-empty">No users found.</td>
+                <td colspan="5" class="admin-users-empty">No users found.</td>
               </tr>
             }
           }
@@ -208,7 +211,7 @@
             <p class="admin-users-modal-eyebrow">User Details</p>
             <h2 class="admin-users-modal-title">
               @if (selectedUserDetails(); as user) {
-                {{ user.nickname || user.email }}
+                {{ getDetailsDisplayName(user) }}
               } @else {
                 User
               }
@@ -254,29 +257,74 @@
             <p class="admin-users-alert">{{ detailsErrorMessage() }}</p>
           } @else if (selectedUserDetails(); as user) {
             @if (activeDetailsTab() === 'general') {
-              <div class="admin-users-details-grid">
-                <div class="admin-users-detail-item"><span>ID</span><strong>{{ user.id }}</strong></div>
-                <div class="admin-users-detail-item"><span>Role</span><strong>{{ formatValue(user.role) }}</strong></div>
-                <div class="admin-users-detail-item"><span>Nickname</span><strong>{{ formatValue(user.nickname) }}</strong></div>
-                <div class="admin-users-detail-item"><span>Email</span><strong>{{ formatValue(user.email) }}</strong></div>
-                <div class="admin-users-detail-item"><span>Email verified at</span><strong>{{ formatDate(user.email_verified_at) }}</strong></div>
-                <div class="admin-users-detail-item"><span>Status</span><strong>{{ formatValue(user.status) }}</strong></div>
-                <div class="admin-users-detail-item"><span>Rank</span><strong>{{ formatValue(user.rank) }}</strong></div>
-                <div class="admin-users-detail-item"><span>Language</span><strong>{{ formatValue(user.lang) }}</strong></div>
-                <div class="admin-users-detail-item admin-users-detail-item--wide"><span>Signature</span><strong>{{ formatValue(user.signature) }}</strong></div>
-                <div class="admin-users-detail-item"><span>Legacy Firebase ID</span><strong>{{ formatValue(user.legacy_firebase_id) }}</strong></div>
-                <div class="admin-users-detail-item"><span>Free change used</span><strong>{{ formatValue(user.profile_free_change_used) }}</strong></div>
-                <div class="admin-users-detail-item"><span>Paid change credits</span><strong>{{ formatValue(user.profile_paid_change_credits) }}</strong></div>
-                <div class="admin-users-detail-item"><span>Flag ID</span><strong>{{ formatValue(user.profile_flag_id) }}</strong></div>
-                <div class="admin-users-detail-item"><span>Deleted at</span><strong>{{ formatDate(user.deleted_at) }}</strong></div>
-                <div class="admin-users-detail-item"><span>Restore until</span><strong>{{ formatDate(user.restore_until) }}</strong></div>
-                <div class="admin-users-detail-item"><span>Anonymized at</span><strong>{{ formatDate(user.anonymized_at) }}</strong></div>
-                <div class="admin-users-detail-item"><span>Global chat muted until</span><strong>{{ formatDate(user.global_chat_muted_until) }}</strong></div>
-                <div class="admin-users-detail-item"><span>Personal top 100 count</span><strong>{{ formatValue(user.personal_top_100_count) }}</strong></div>
-                <div class="admin-users-detail-item"><span>Clan top 50 count</span><strong>{{ formatValue(user.clan_top_50_count) }}</strong></div>
-                <div class="admin-users-detail-item"><span>Wallet EXP</span><strong>{{ user.wallet_balances.exp }}</strong></div>
-                <div class="admin-users-detail-item"><span>Wallet Funds</span><strong>{{ user.wallet_balances.funds }}</strong></div>
-                <div class="admin-users-detail-item"><span>Wallet Gems</span><strong>{{ user.wallet_balances.gems }}</strong></div>
+              <div class="admin-users-profile">
+                <section class="admin-users-profile-card admin-users-profile-card--hero">
+                  <div class="admin-users-profile-identity">
+                    <div class="admin-users-profile-avatar" aria-hidden="true">{{ getDetailsAvatarLetters(user) }}</div>
+
+                    <div class="admin-users-profile-copy">
+                      <div class="admin-users-profile-row">
+                        <h3 class="admin-users-profile-name">{{ getDetailsDisplayName(user) }}</h3>
+                        <span class="admin-users-profile-role">{{ formatRoleLabel(user.role) }}</span>
+                        <span class="admin-users-profile-status">{{ formatValue(user.status) }}</span>
+                      </div>
+
+                      <p class="admin-users-profile-email">{{ formatValue(user.email) }}</p>
+                      <p class="admin-users-profile-meta">
+                        ID #{{ user.id }} · Rank {{ formatValue(user.rank) }} · Language {{ formatValue(user.lang) }}
+                      </p>
+                    </div>
+                  </div>
+                </section>
+
+                <section class="admin-users-profile-card">
+                  <header class="admin-users-profile-section-header">
+                    <h3 class="admin-users-profile-section-title">Account</h3>
+                    <p class="admin-users-profile-section-copy">Core identity and account lifecycle information.</p>
+                  </header>
+
+                  <div class="admin-users-details-grid">
+                    <div class="admin-users-detail-item"><span>Nickname</span><strong>{{ formatValue(user.nickname) }}</strong></div>
+                    <div class="admin-users-detail-item"><span>Email</span><strong>{{ formatValue(user.email) }}</strong></div>
+                    <div class="admin-users-detail-item"><span>Email verified at</span><strong>{{ formatDate(user.email_verified_at) }}</strong></div>
+                    <div class="admin-users-detail-item"><span>Legacy Firebase ID</span><strong>{{ formatValue(user.legacy_firebase_id) }}</strong></div>
+                    <div class="admin-users-detail-item"><span>Deleted at</span><strong>{{ formatDate(user.deleted_at) }}</strong></div>
+                    <div class="admin-users-detail-item"><span>Restore until</span><strong>{{ formatDate(user.restore_until) }}</strong></div>
+                    <div class="admin-users-detail-item"><span>Anonymized at</span><strong>{{ formatDate(user.anonymized_at) }}</strong></div>
+                    <div class="admin-users-detail-item"><span>Chat muted until</span><strong>{{ formatDate(user.global_chat_muted_until) }}</strong></div>
+                  </div>
+                </section>
+
+                <section class="admin-users-profile-card">
+                  <header class="admin-users-profile-section-header">
+                    <h3 class="admin-users-profile-section-title">Profile</h3>
+                    <p class="admin-users-profile-section-copy">Gameplay profile settings and progression-related values.</p>
+                  </header>
+
+                  <div class="admin-users-details-grid">
+                    <div class="admin-users-detail-item admin-users-detail-item--wide"><span>Signature</span><strong>{{ formatValue(user.signature) }}</strong></div>
+                    <div class="admin-users-detail-item"><span>Free change used</span><strong>{{ formatValue(user.profile_free_change_used) }}</strong></div>
+                    <div class="admin-users-detail-item"><span>Paid change credits</span><strong>{{ formatValue(user.profile_paid_change_credits) }}</strong></div>
+                    <div class="admin-users-detail-item"><span>Flag ID</span><strong>{{ formatValue(user.profile_flag_id) }}</strong></div>
+                    <div class="admin-users-detail-item"><span>Personal top 100 count</span><strong>{{ formatValue(user.personal_top_100_count) }}</strong></div>
+                    <div class="admin-users-detail-item"><span>Clan top 50 count</span><strong>{{ formatValue(user.clan_top_50_count) }}</strong></div>
+                  </div>
+                </section>
+              </div>
+            } @else if (activeDetailsTab() === 'inventory') {
+              <div class="admin-users-profile">
+                <section class="admin-users-profile-card">
+                  <header class="admin-users-profile-section-header">
+                    <h3 class="admin-users-profile-section-title">Wallet</h3>
+                    <p class="admin-users-profile-section-copy">Current stored balances available on the player account.</p>
+                  </header>
+
+                  <div class="admin-users-details-grid admin-users-details-grid--wallet">
+                    <div class="admin-users-detail-item"><span>EXP</span><strong>{{ user.wallet_balances.exp }}</strong></div>
+                    <div class="admin-users-detail-item"><span>Funds</span><strong>{{ user.wallet_balances.funds }}</strong></div>
+                    <div class="admin-users-detail-item"><span>Gems</span><strong>{{ user.wallet_balances.gems }}</strong></div>
+                  </div>
+                </section>
               </div>
             } @else {
               <div class="admin-users-modal-empty">No data available yet.</div>

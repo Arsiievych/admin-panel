@@ -174,6 +174,33 @@ export class AdminUsers implements OnInit, OnDestroy {
     this.loadUsers();
   }
 
+  clearAppliedFilter(label: string): void {
+    switch (label) {
+      case 'Search':
+        if (this.searchTimer) {
+          clearTimeout(this.searchTimer);
+          this.searchTimer = null;
+        }
+        this.searchDraft.set('');
+        this.search.set('');
+        break;
+      case 'Role':
+        this.roleFilter.set('');
+        break;
+      case 'Status':
+        this.statusFilter.set('');
+        break;
+      case 'Email':
+        this.emailVerifiedFilter.set('');
+        break;
+      default:
+        return;
+    }
+
+    this.page.set(1);
+    this.loadUsers();
+  }
+
   openDetails(userId: number): void {
     if (!this.canViewDetails()) {
       this.detailsErrorMessage.set('User details are available only for Admin and Super Admin accounts.');
@@ -272,7 +299,7 @@ export class AdminUsers implements OnInit, OnDestroy {
       this.search.set(normalizedSearch);
       this.page.set(1);
       this.loadUsers();
-    }, 250);
+    }, 500);
   }
 
   private toEmailVerifiedParam(value: AdminUsersEmailVerifiedFilter): boolean | undefined {
@@ -316,5 +343,30 @@ export class AdminUsers implements OnInit, OnDestroy {
       dateStyle: 'medium',
       timeStyle: 'short',
     }).format(new Date(value));
+  }
+
+  getDetailsDisplayName(user: AdminUserDetails): string {
+    return user.nickname || user.email || `User #${user.id}`;
+  }
+
+  getDetailsAvatarLetters(user: AdminUserDetails): string {
+    const base = user.nickname || user.email || `U${user.id}`;
+    const parts = base
+      .split(/[\s._-]+/)
+      .filter(Boolean)
+      .slice(0, 2);
+
+    return parts.map((part) => part.charAt(0)).join('').toUpperCase() || 'U';
+  }
+
+  formatRoleLabel(value: string | null): string {
+    if (!value) {
+      return '—';
+    }
+
+    return value
+      .toLowerCase()
+      .replace(/_/g, ' ')
+      .replace(/\b\w/g, (char) => char.toUpperCase());
   }
 }

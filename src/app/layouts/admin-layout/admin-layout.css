@@ -1,6 +1,8 @@
 :host {
   display: block;
-  min-height: 100svh;
+  height: 100svh;
+  --layout-nav-width: var(--nav-width);
+  padding-top: var(--header-height);
   color: #eaf7ff;
   background:
     radial-gradient(circle at 30% 18%, rgba(83, 221, 255, 0.16), transparent 18rem),
@@ -10,10 +12,12 @@
 
 .admin-layout {
   position: relative;
-  display: grid;
-  grid-template-columns: var(--nav-width) minmax(0, 1fr);
-  align-items: stretch;
-  min-height: var(--content-min-height);
+  height: var(--content-min-height);
+  overflow: hidden;
+}
+
+.admin-layout--nav-collapsed {
+  --layout-nav-width: var(--nav-width-collapsed);
 }
 
 .admin-layout::before {
@@ -30,68 +34,25 @@
 
 .admin-layout-content {
   min-width: 0;
-  min-height: var(--content-min-height);
+  min-height: 0;
+  height: var(--content-min-height);
   display: block;
-}
-
-.admin-layout-footer {
-  margin: 0;
-  padding: 0.95rem 1.5rem 1.2rem;
-  border-top: 1px solid rgba(145, 202, 229, 0.1);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  color: rgba(211, 225, 239, 0.58);
-  font-size: 0.78rem;
-  letter-spacing: 0.04em;
-  background: linear-gradient(180deg, rgba(10, 18, 33, 0), rgba(10, 18, 33, 0.38));
-}
-
-.admin-layout-footer-brand {
-  color: rgba(238, 247, 253, 0.76);
-  font-weight: 600;
-}
-
-.admin-layout-footer-meta {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.85rem;
-}
-
-.admin-layout-footer-meta span {
-  position: relative;
-}
-
-.admin-layout-footer-meta span + span::before {
-  content: '';
-  position: absolute;
-  left: -0.48rem;
-  top: 50%;
-  width: 0.2rem;
-  height: 0.2rem;
-  border-radius: 999px;
-  background: rgba(145, 202, 229, 0.35);
-  transform: translateY(-50%);
+  padding-top: 0.35rem;
+  margin-left: var(--layout-nav-width);
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 @media (max-width: 820px) {
   .admin-layout {
-    grid-template-columns: 1fr;
+    height: auto;
+    overflow: visible;
   }
 
   .admin-layout-content {
     min-height: auto;
-  }
-
-  .admin-layout-footer {
-    padding: 0.9rem 1rem 1rem;
-  }
-}
-
-@media (max-width: 700px) {
-  .admin-layout-footer {
-    flex-direction: column;
-    align-items: flex-start;
+    height: auto;
+    margin-left: 0;
+    overflow: visible;
   }
 }

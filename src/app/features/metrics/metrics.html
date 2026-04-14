@@ -1,0 +1,135 @@
+<app-page-shell [title]="'Metrics'">
+    <section class="metrics-grid" aria-label="Metrics charts">
+        <article class="metrics-panel metrics-panel--chart-surface">
+            <div class="metrics-chart-topbar">
+                <div class="dashboard-chart-heading">
+                    <h2 class="metrics-panel-title">New Users</h2>
+                    <span class="dashboard-chart-info" tabindex="0" aria-label="Shows how many new player accounts were created during the selected period.">
+                        <i class="fi fi-rr-info" aria-hidden="true"></i>
+                        <span class="dashboard-chart-tooltip">Shows how many new player accounts were created during the selected period.</span>
+                    </span>
+                </div>
+                <div class="metrics-range-switch" role="group" aria-label="New users time range">
+                    <button class="metrics-range-button" type="button" [class.is-active]="selectedUsersRange() === 7" (click)="setUsersRange(7)">7 days</button>
+                    <button class="metrics-range-button" type="button" [class.is-active]="selectedUsersRange() === 30" (click)="setUsersRange(30)">30 days</button>
+                    <button class="metrics-range-button" type="button" [class.is-active]="selectedUsersRange() === 365" (click)="setUsersRange(365)">1 year</button>
+                </div>
+            </div>
+            <div class="metrics-chart-stage">
+                <div class="metrics-chart-spotlight" aria-hidden="true"></div>
+                <div class="metrics-chart-shell">
+                    <canvas baseChart class="metrics-chart" [type]="lineChartType" [data]="usersChartData()" [options]="usersChartOptions()"></canvas>
+                </div>
+            </div>
+            <div class="metrics-chart-summary">
+                <div class="metrics-chart-summary-item">
+                    <span class="metrics-chart-summary-label">New Users Total</span>
+                    <strong>{{ totalUsers(selectedUsersData()) }}</strong>
+                </div>
+                <div class="metrics-chart-summary-item">
+                    <span class="metrics-chart-summary-label">{{ activityAverageLabel(selectedUsersRange()) }}</span>
+                    <strong>{{ averageUsers(selectedUsersData()) }}</strong>
+                </div>
+            </div>
+        </article>
+
+        <article class="metrics-panel metrics-panel--compact metrics-panel--chart-surface">
+            <div class="metrics-chart-topbar">
+                <div class="dashboard-chart-heading">
+                    <h2 class="metrics-panel-title">Active Users</h2>
+                    <span class="dashboard-chart-info" tabindex="0" aria-label="Active users are players who opened the game and generated activity during the selected period.">
+                        <i class="fi fi-rr-info" aria-hidden="true"></i>
+                        <span class="dashboard-chart-tooltip">Active users are players who opened the game and generated activity during the selected period.</span>
+                    </span>
+                </div>
+                <div class="metrics-range-switch" role="group" aria-label="Active users time range">
+                    <button class="metrics-range-button" type="button" [class.is-active]="selectedActiveUsersRange() === 7" (click)="setActiveUsersRange(7)">7 days</button>
+                    <button class="metrics-range-button" type="button" [class.is-active]="selectedActiveUsersRange() === 30" (click)="setActiveUsersRange(30)">30 days</button>
+                    <button class="metrics-range-button" type="button" [class.is-active]="selectedActiveUsersRange() === 365" (click)="setActiveUsersRange(365)">1 year</button>
+                </div>
+            </div>
+            <div class="metrics-chart-stage">
+                <div class="metrics-chart-spotlight" aria-hidden="true"></div>
+                <div class="metrics-chart-shell">
+                    <canvas baseChart class="metrics-chart" [type]="lineChartType" [data]="activeUsersChartData()" [options]="activeUsersChartOptions()"></canvas>
+                </div>
+            </div>
+            <div class="metrics-chart-summary">
+                <div class="metrics-chart-summary-item">
+                    <span class="metrics-chart-summary-label">Active Users</span>
+                    <strong>{{ totalUsers(selectedActiveUsersData()) }}</strong>
+                </div>
+                <div class="metrics-chart-summary-item">
+                    <span class="metrics-chart-summary-label">{{ activeUsersAverageLabel() }}</span>
+                    <strong>{{ averageUsers(selectedActiveUsersData()) }}</strong>
+                </div>
+            </div>
+        </article>
+
+        <article class="metrics-panel metrics-panel--compact metrics-panel--chart-surface">
+            <div class="metrics-chart-topbar">
+                <div class="dashboard-chart-heading">
+                    <h2 class="metrics-panel-title">New Legions</h2>
+                    <span class="dashboard-chart-info" tabindex="0" aria-label="Shows how many new legions were created during the selected reporting period.">
+                        <i class="fi fi-rr-info" aria-hidden="true"></i>
+                        <span class="dashboard-chart-tooltip">Shows how many new legions were created during the selected reporting period.</span>
+                    </span>
+                </div>
+                <div class="metrics-range-switch" role="group" aria-label="New legions time range">
+                    <button class="metrics-range-button" type="button" [class.is-active]="selectedLegionsRange() === 7" (click)="setLegionsRange(7)">7 days</button>
+                    <button class="metrics-range-button" type="button" [class.is-active]="selectedLegionsRange() === 30" (click)="setLegionsRange(30)">30 days</button>
+                    <button class="metrics-range-button" type="button" [class.is-active]="selectedLegionsRange() === 365" (click)="setLegionsRange(365)">1 year</button>
+                </div>
+            </div>
+            <div class="metrics-chart-stage">
+                <div class="metrics-chart-spotlight" aria-hidden="true"></div>
+                <div class="metrics-chart-shell">
+                    <canvas baseChart class="metrics-chart" [type]="lineChartType" [data]="legionsChartData()" [options]="legionsChartOptions()"></canvas>
+                </div>
+            </div>
+            <div class="metrics-chart-summary">
+                <div class="metrics-chart-summary-item">
+                    <span class="metrics-chart-summary-label">Legions Created</span>
+                    <strong>{{ totalUsers(selectedLegionsData()) }}</strong>
+                </div>
+                <div class="metrics-chart-summary-item">
+                    <span class="metrics-chart-summary-label">{{ activityAverageLabel(selectedLegionsRange()) }}</span>
+                    <strong>{{ averageUsers(selectedLegionsData()) }}</strong>
+                </div>
+            </div>
+        </article>
+
+        <article class="metrics-panel metrics-panel--compact metrics-panel--chart-surface">
+            <div class="metrics-chart-topbar">
+                <div class="dashboard-chart-heading">
+                    <h2 class="metrics-panel-title">Matches</h2>
+                    <span class="dashboard-chart-info" tabindex="0" aria-label="Shows completed match volume for the selected time window, including hourly activity for today.">
+                        <i class="fi fi-rr-info" aria-hidden="true"></i>
+                        <span class="dashboard-chart-tooltip">Shows completed match volume for the selected time window, including hourly activity for today.</span>
+                    </span>
+                </div>
+                <div class="metrics-range-switch" role="group" aria-label="Matches time range">
+                    <button class="metrics-range-button" type="button" [class.is-active]="selectedMatchesRange() === 1" (click)="setMatchesRange(1)">Today</button>
+                    <button class="metrics-range-button" type="button" [class.is-active]="selectedMatchesRange() === 7" (click)="setMatchesRange(7)">7 days</button>
+                    <button class="metrics-range-button" type="button" [class.is-active]="selectedMatchesRange() === 30" (click)="setMatchesRange(30)">30 days</button>
+                </div>
+            </div>
+            <div class="metrics-chart-stage">
+                <div class="metrics-chart-spotlight" aria-hidden="true"></div>
+                <div class="metrics-chart-shell">
+                    <canvas baseChart class="metrics-chart" [type]="lineChartType" [data]="matchesChartData()" [options]="matchesChartOptions()"></canvas>
+                </div>
+            </div>
+            <div class="metrics-chart-summary">
+                <div class="metrics-chart-summary-item">
+                    <span class="metrics-chart-summary-label">Matches Played</span>
+                    <strong>{{ totalUsers(selectedMatchesData()) }}</strong>
+                </div>
+                <div class="metrics-chart-summary-item">
+                    <span class="metrics-chart-summary-label">{{ matchesAverageLabel() }}</span>
+                    <strong>{{ averageUsers(selectedMatchesData()) }}</strong>
+                </div>
+            </div>
+        </article>
+    </section>
+</app-page-shell>

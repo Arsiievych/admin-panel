@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import {NavigationItem} from "./navigation-item/navigation-item";
 
 @Component({
@@ -10,5 +10,10 @@ import {NavigationItem} from "./navigation-item/navigation-item";
   styleUrl: './navigation.css',
 })
 export class Navigation {
+  readonly collapsed = input(false);
+  readonly toggleCollapse = output<void>();
 
+  onToggleCollapse(): void {
+    this.toggleCollapse.emit();
+  }
 }

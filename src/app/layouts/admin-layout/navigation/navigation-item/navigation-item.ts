@@ -13,6 +13,7 @@ import {RouterLink, RouterLinkActive} from "@angular/router";
 export class NavigationItem {
   @Input() label = '';
   @Input() icon = '';
+  @Input() collapsed = false;
   @Input() muted = false;
   @Input() path = <string[]>[];
 

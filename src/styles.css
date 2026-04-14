@@ -2,7 +2,9 @@
 
 :root {
   --nav-width: 220px;
-  --content-min-height: calc(100vh - 5.5rem);
+  --nav-width-collapsed: 76px;
+  --header-height: 4.7rem;
+  --content-min-height: calc(100vh - var(--header-height));
 
   --bg-page: #0b1220;
   --bg-sidebar: #0f172a;
@@ -173,31 +175,67 @@ app-dashboard .dashboard-panel--general-info .dashboard-panel-header {
   margin-bottom: 0.6rem;
 }
 
-app-dashboard .dashboard-general-grid {
+app-dashboard .dashboard-subwidgets {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0.55rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
 }
 
-app-dashboard .dashboard-general-stat {
+app-dashboard .dashboard-subwidget {
   display: flex;
   flex-direction: column;
-  gap: 0.22rem;
+  gap: 0.7rem;
   min-width: 0;
-  padding: 0.65rem 0.8rem 0.7rem;
+  padding: 0.8rem 0.9rem 0.9rem;
   border: 1px solid rgba(139, 180, 235, 0.12);
   border-radius: 1rem;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.02));
 }
 
-app-dashboard .dashboard-general-stat--live {
+app-dashboard .dashboard-subwidget-title {
+  margin: 0;
+  color: #f4f8ff;
+  font-size: 0.98rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+app-dashboard .dashboard-subwidget-stat-grid {
+  display: grid;
+  gap: 0.55rem;
+}
+
+app-dashboard .dashboard-subwidget-stat-grid--two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+app-dashboard .dashboard-subwidget-stat-grid--single {
+  grid-template-columns: 1fr;
+}
+
+app-dashboard .dashboard-subwidget-stat,
+app-dashboard .dashboard-subwidget-mode-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.22rem;
+  min-width: 0;
+  padding: 0.7rem 0.8rem 0.75rem;
+  border: 1px solid rgba(139, 180, 235, 0.12);
+  border-radius: 0.95rem;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.02));
+}
+
+app-dashboard .dashboard-subwidget-stat--live {
   border-color: rgba(118, 224, 255, 0.18);
   background:
     radial-gradient(circle at 50% 0, rgba(102, 226, 255, 0.08), transparent 8rem),
     linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.024));
 }
 
-app-dashboard .dashboard-general-stat > span,
+app-dashboard .dashboard-subwidget-stat > span,
+app-dashboard .dashboard-subwidget-line > span,
+app-dashboard .dashboard-subwidget-mode-meta,
+app-dashboard .dashboard-subwidget-mode-detail,
 app-dashboard .dashboard-general-status-pill > span {
   color: rgba(195, 212, 239, 0.62);
   font-size: 0.74rem;
@@ -205,31 +243,61 @@ app-dashboard .dashboard-general-status-pill > span {
   line-height: 1.2;
 }
 
-app-dashboard .dashboard-general-stat > strong {
+app-dashboard .dashboard-subwidget-stat > strong {
   color: #f4f8ff;
-  font-size: 1.14rem;
+  font-size: 2rem;
   font-weight: 600;
   line-height: 1;
   letter-spacing: -0.02em;
 }
 
-app-dashboard .dashboard-general-stat--live > strong {
+app-dashboard .dashboard-subwidget-stat--live > strong {
   color: #f6fbff;
   text-shadow: 0 0 18px rgba(122, 227, 255, 0.12);
 }
 
-app-dashboard .dashboard-general-stat > small {
+app-dashboard .dashboard-subwidget-stat > small {
   color: rgba(154, 178, 214, 0.54);
   font-size: 0.72rem;
   font-weight: 500;
   line-height: 1.15;
 }
 
-app-dashboard .dashboard-general-statuses {
+app-dashboard .dashboard-subwidget-stat-stack,
+app-dashboard .dashboard-subwidget-mode-list,
+app-dashboard .dashboard-subwidget-mode-cards {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.55rem;
-  padding-top: 0.05rem;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+app-dashboard .dashboard-subwidget-line,
+app-dashboard .dashboard-subwidget-mode-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+app-dashboard .dashboard-subwidget-line > strong,
+app-dashboard .dashboard-subwidget-mode-card-top > strong {
+  color: #f4f8ff;
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+app-dashboard .dashboard-subwidget-mode-card-top > strong {
+  font-size: 0.96rem;
+}
+
+app-dashboard .dashboard-subwidget-mode-meta,
+app-dashboard .dashboard-subwidget-mode-detail {
+  margin: 0;
+}
+
+app-dashboard .dashboard-subwidget-mode-detail {
+  color: rgba(233, 241, 252, 0.82);
 }
 
 app-dashboard .dashboard-general-status-pill {
@@ -308,14 +376,207 @@ app-dashboard .dashboard-chart-info:focus-visible .dashboard-chart-tooltip {
   transform: translateY(0);
 }
 
+app-admin-users .admin-users-profile {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+app-admin-users .admin-users-profile-card {
+  border: 1px solid rgba(113, 157, 217, 0.22);
+  border-radius: 1.35rem;
+  background:
+    radial-gradient(circle at 55% 0%, rgba(102, 226, 255, 0.18), transparent 26rem),
+    linear-gradient(180deg, rgba(24, 38, 65, 0.98), rgba(17, 27, 49, 0.96));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 18px 45px rgba(4, 10, 24, 0.22);
+}
+
+app-admin-users .admin-users-profile-card--hero {
+  padding: 1.25rem;
+}
+
+app-admin-users .admin-users-profile-identity {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-width: 0;
+}
+
+app-admin-users .admin-users-profile-avatar {
+  width: 4.5rem;
+  height: 4.5rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(86, 149, 194, 0.22);
+  border-radius: 1rem;
+  background: linear-gradient(160deg, rgba(83, 221, 255, 0.3), rgba(25, 69, 106, 0.82));
+  box-shadow: 0 0 28px rgba(15, 107, 157, 0.22);
+  color: #bdf7ff;
+  font-size: 1.45rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+app-admin-users .admin-users-profile-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+app-admin-users .admin-users-profile-row {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+
+app-admin-users .admin-users-profile-name,
+app-admin-users .admin-users-profile-email,
+app-admin-users .admin-users-profile-meta,
+app-admin-users .admin-users-profile-section-title,
+app-admin-users .admin-users-profile-section-copy {
+  margin: 0;
+}
+
+app-admin-users .admin-users-profile-name {
+  color: #f3f7fb;
+  font-size: clamp(1.1rem, 1.7vw, 1.45rem);
+  font-weight: 650;
+  line-height: 1.1;
+}
+
+app-admin-users .admin-users-profile-role,
+app-admin-users .admin-users-profile-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.8rem;
+  padding: 0 0.75rem;
+  border: 1px solid rgba(136, 156, 183, 0.3);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #e4edf6;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+app-admin-users .admin-users-profile-status {
+  border-color: rgba(74, 222, 128, 0.28);
+  background: rgba(74, 222, 128, 0.14);
+  color: #aff1c6;
+}
+
+app-admin-users .admin-users-profile-email,
+app-admin-users .admin-users-profile-meta,
+app-admin-users .admin-users-profile-section-copy {
+  color: #9eb2c8;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+app-admin-users .admin-users-profile-section-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 1.1rem 1.1rem 0;
+}
+
+app-admin-users .admin-users-profile-section-title {
+  color: #edf5fb;
+  font-size: 1.02rem;
+  font-weight: 600;
+}
+
+app-admin-users .admin-users-details-grid {
+  padding: 1.1rem;
+}
+
+app-admin-users .admin-users-details-grid--wallet {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 760px) {
+  app-admin-users .admin-users-details-grid--wallet {
+    grid-template-columns: 1fr;
+  }
+
+  app-admin-users .admin-users-profile-identity {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+app-admin-users .admin-users-search-field {
+  border-color: rgba(145, 202, 229, 0.26);
+  background: rgba(16, 30, 52, 0.9);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+app-admin-users .admin-users-search-field i {
+  color: rgba(189, 247, 255, 0.82);
+}
+
+app-admin-users .admin-users-search-field.is-active {
+  border-color: rgba(102, 226, 255, 0.34);
+  background: rgba(22, 41, 69, 0.96);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 0 0 1px rgba(102, 226, 255, 0.08);
+}
+
+app-admin-users .admin-users-control--search input {
+  color: #f3f8fe;
+}
+
+app-admin-users .admin-users-control--search input::placeholder {
+  color: rgba(211, 225, 239, 0.58);
+}
+
+app-admin-users .admin-users-icon-button.is-active {
+  border-color: rgba(102, 226, 255, 0.3);
+  background: rgba(22, 41, 69, 0.92);
+  color: #f3f8fe;
+}
+
+app-admin-users .admin-users-filter-menu {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+  width: 15rem;
+}
+
+app-admin-users .admin-users-filter-menu .admin-users-control {
+  width: 100%;
+}
+
+app-admin-users .admin-users-filter-menu .admin-users-control select {
+  width: 100%;
+}
+
+app-admin-users .admin-users-filter-chip {
+  cursor: pointer;
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+app-admin-users .admin-users-filter-chip:hover {
+  border-color: rgba(102, 226, 255, 0.24);
+  background: rgba(22, 41, 69, 0.9);
+  color: #f3f8fe;
+}
+
+
 @media (max-width: 1100px) {
-  app-dashboard .dashboard-general-grid {
+  app-dashboard .dashboard-subwidgets {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 900px) {
-  app-dashboard .dashboard-general-grid {
+  app-dashboard .dashboard-subwidgets,
+  app-dashboard .dashboard-subwidget-stat-grid--two {
     grid-template-columns: 1fr;
   }
 }
