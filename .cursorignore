@@ -1,18 +1,23 @@
-# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
+# Keep Cursor focused on source files only.
 
-# Compiled output
-/dist
-/tmp
-/out-tsc
-/bazel-out
+# Build artifacts and generated output
+dist/
+out-tsc/
+tmp/
+bazel-out/
+coverage/
+.angular/
 
-# Node
-/node_modules
-npm-debug.log
-yarn-error.log
+# Dependencies and package manager noise
+node_modules/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
-# IDEs and editors
+# VCS and IDE metadata
+.git/
 .idea/
+.history/
 .project
 .classpath
 .c9/
@@ -20,23 +25,12 @@ yarn-error.log
 .settings/
 *.sublime-workspace
 
-# Visual Studio Code
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-!.vscode/mcp.json
-.history/*
-
-# Miscellaneous
-/.angular/cache
+# Tool and runtime leftovers
 .sass-cache/
-/connect.lock
-/coverage
-/libpeerconnection.log
+connect.lock
+libpeerconnection.log
 testem.log
-/typings
+typings/
 __screenshots__/
 
 # System files
