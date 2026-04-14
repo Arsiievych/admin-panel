@@ -75,7 +75,18 @@
 
 @media (max-width: 900px) {
   .item-button {
-    font-size: 1.25rem;
-    padding: 1rem var(--nav-content-inline, 1.25rem);
+    font-size: 0.92rem;
+    padding: 0.78rem var(--nav-content-inline, 0.95rem);
+  }
+
+  .item-icon {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .item-button {
+    padding: 0.72rem var(--nav-content-inline, 0.82rem);
+    font-size: 0.88rem;
   }
 }

@@ -616,3 +616,60 @@ app-admin-users .admin-users-filter-chip:hover {
     grid-template-columns: 1fr;
   }
 }
+
+
+@media (max-width: 980px) and (orientation: portrait) {
+  app-dashboard .dashboard-subwidgets {
+    grid-template-columns: 1fr;
+  }
+
+  app-dashboard .dashboard-subwidget {
+    padding: 0.72rem 0.78rem 0.8rem;
+    gap: 0.58rem;
+  }
+
+  app-dashboard .dashboard-subwidget-title {
+    font-size: 0.92rem;
+  }
+
+  app-dashboard .dashboard-subwidget-stat > strong {
+    font-size: 1.55rem;
+  }
+
+  app-dashboard .dashboard-subwidget-mode-list {
+    grid-template-columns: 1fr;
+  }
+
+  app-dashboard .dashboard-subwidget-mode-list .dashboard-subwidget-line {
+    padding: 0.48rem 0.56rem;
+  }
+}
+
+@media (max-width: 560px) {
+  app-dashboard .dashboard-panel--general-info {
+    padding: 0.82rem 0.72rem;
+    gap: 0.58rem;
+  }
+
+  app-dashboard .dashboard-subwidgets {
+    gap: 0.58rem;
+  }
+
+  app-dashboard .dashboard-subwidget-stat-grid {
+    gap: 0.45rem;
+  }
+
+  app-dashboard .dashboard-subwidget-stat,
+  app-dashboard .dashboard-subwidget-mode-card {
+    padding: 0.58rem 0.62rem 0.62rem;
+  }
+
+  app-dashboard .dashboard-subwidget-stat > strong {
+    font-size: 1.35rem;
+  }
+
+  app-dashboard .dashboard-general-status-pill {
+    min-height: 1.55rem;
+    padding: 0.2rem 0.5rem;
+  }
+}
