@@ -130,11 +130,12 @@
 
                     <article class="dashboard-subwidget">
                         <h3 class="dashboard-subwidget-title">Legion Activity</h3>
-                        <div class="dashboard-subwidget-stat-stack">
+                        <div class="dashboard-subwidget-stat-grid dashboard-subwidget-stat-grid--two">
                             @for (stat of legionOverviewStats(); track stat.label) {
-                                <div class="dashboard-subwidget-line">
+                                <div class="dashboard-subwidget-stat" [class.dashboard-subwidget-stat--live]="stat.emphasis === 'live'">
                                     <span>{{ stat.label }}</span>
                                     <strong>{{ stat.value }}</strong>
+                                    <small>{{ stat.helper }}</small>
                                 </div>
                             }
                         </div>
