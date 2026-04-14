@@ -295,11 +295,11 @@ line-height: 1;
 display: inline-flex;
 align-items: center;
 justify-content: center;
-min-height: 1.95rem;
-padding: 0.2rem 0.75rem;
+min-height: 1.58rem;
+padding: 0.1rem 0.52rem;
 border-radius: 999px;
 border: 1px solid rgba(116, 191, 137, 0.18);
-font-size: 0.9rem;
+font-size: 0.76rem;
 font-weight: 600;
 white-space: nowrap;
 }
@@ -392,38 +392,6 @@ letter-spacing: -0.02em;
 .dashboard-service-name-cell {
 gap: 0.7rem;
 min-width: 0;
-}
-.dashboard-service-status {
-display: inline-flex;
-align-items: center;
-gap: 0.32rem;
-min-height: 1.7rem;
-padding: 0.16rem 0.65rem;
-border-radius: 999px;
-border: 1px solid rgba(139, 180, 235, 0.18);
-color: #a0b6d8;
-font-size: 0.8rem;
-font-weight: 600;
-background: rgba(255, 255, 255, 0.035);
-}
-.dashboard-service-status--healthy {
-background: rgba(79, 156, 92, 0.2);
-color: #89e39a;
-}
-.dashboard-service-status--warning {
-background: rgba(255, 211, 122, 0.14);
-color: #ffd37a;
-}
-.dashboard-service-status--unhealthy {
-background: rgba(255, 118, 118, 0.12);
-color: #ff9d9d;
-}
-.dashboard-service-status-dot {
-width: 0.36rem;
-height: 0.36rem;
-border-radius: 999px;
-background: currentColor;
-box-shadow: 0 0 10px rgba(140, 231, 173, 0.35);
 }
 .dashboard-state {
 display: grid;

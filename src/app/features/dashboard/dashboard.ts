@@ -588,7 +588,16 @@ export class Dashboard implements OnInit, OnDestroy {
   }
 
   overallStatusLabel(status: string): string {
-    return status.replace(/[_-]+/g, ' ').trim() || 'Unknown';
+    const normalizedStatus = status.replace(/[_-]+/g, ' ').trim();
+
+    if (!normalizedStatus) {
+      return 'Unknown';
+    }
+
+    return normalizedStatus
+      .split(/\s+/)
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
   }
 
   overallStatusMessage(health: ServerHealth): string {

@@ -80,12 +80,11 @@
 
                                     <div>
                                         <span
-                                                class="dashboard-service-status"
-                                                [class.dashboard-service-status--healthy]="serviceTone(service) === 'healthy'"
-                                                [class.dashboard-service-status--warning]="serviceTone(service) === 'warning'"
-                                                [class.dashboard-service-status--unhealthy]="serviceTone(service) === 'unhealthy'"
+                                                class="dashboard-status-badge"
+                                                [class.dashboard-status-badge--healthy]="serviceTone(service) === 'healthy'"
+                                                [class.dashboard-status-badge--warning]="serviceTone(service) === 'warning'"
+                                                [class.dashboard-status-badge--unhealthy]="serviceTone(service) === 'unhealthy'"
                                         >
-                                            <span class="dashboard-service-status-dot"></span>
                                             {{ serviceStatusLabel(service) }}
                                         </span>
                                     </div>
