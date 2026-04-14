@@ -264,11 +264,16 @@ app-dashboard .dashboard-subwidget-stat > small {
 }
 
 app-dashboard .dashboard-subwidget-stat-stack,
-app-dashboard .dashboard-subwidget-mode-list,
 app-dashboard .dashboard-subwidget-mode-cards {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+}
+
+app-dashboard .dashboard-subwidget-mode-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.45rem;
 }
 
 app-dashboard .dashboard-subwidget-line,
@@ -279,12 +284,42 @@ app-dashboard .dashboard-subwidget-mode-card-top {
   gap: 0.75rem;
 }
 
+app-dashboard .dashboard-subwidget-mode-list .dashboard-subwidget-line {
+  min-width: 0;
+  padding: 0.52rem 0.6rem;
+  border: 1px solid rgba(139, 180, 235, 0.12);
+  border-radius: 0.72rem;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.015));
+}
+
 app-dashboard .dashboard-subwidget-line > strong,
 app-dashboard .dashboard-subwidget-mode-card-top > strong {
   color: #f4f8ff;
   font-size: 1.1rem;
   font-weight: 600;
   line-height: 1;
+}
+
+app-dashboard .dashboard-subwidget-mode-list .dashboard-subwidget-line > span {
+  min-width: 0;
+  color: rgba(214, 228, 247, 0.72);
+  font-size: 0.72rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+app-dashboard .dashboard-subwidget-mode-list .dashboard-subwidget-line > strong {
+  flex: 0 0 auto;
+  min-width: 1.7rem;
+  padding: 0.18rem 0.38rem;
+  border-radius: 999px;
+  background: rgba(84, 206, 237, 0.14);
+  color: #c7f4ff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-align: center;
 }
 
 app-dashboard .dashboard-subwidget-mode-card-top > strong {
@@ -576,7 +611,8 @@ app-admin-users .admin-users-filter-chip:hover {
 
 @media (max-width: 900px) {
   app-dashboard .dashboard-subwidgets,
-  app-dashboard .dashboard-subwidget-stat-grid--two {
+  app-dashboard .dashboard-subwidget-stat-grid--two,
+  app-dashboard .dashboard-subwidget-mode-list {
     grid-template-columns: 1fr;
   }
 }

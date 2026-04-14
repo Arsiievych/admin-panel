@@ -5,12 +5,14 @@
         type="button"
         [attr.aria-pressed]="collapsed()"
         [attr.aria-label]="collapsed() ? 'Expand side navigation' : 'Collapse side navigation'"
-        [title]="collapsed() ? 'Expand menu' : 'Collapse menu'"
+        [title]="collapsed() ? 'Expand sidebar' : 'Collapse sidebar'"
         (click)="onToggleCollapse()"
       >
         <i class="fi" [class.fi-rr-menu-burger]="collapsed()" [class.fi-rr-angle-double-small-left]="!collapsed()"></i>
+        <span>{{ collapsed() ? 'Expand sidebar' : 'Collapse sidebar' }}</span>
       </button>
   </div>
+
   <div class="navigation-items-slot">
       <app-navigation-item navigation-item [collapsed]="collapsed()" label="Dashboard" icon="fi-rr-apps" [path]="['/dashboard']"/>
       <app-navigation-item navigation-item [collapsed]="collapsed()" label="Metrics" icon="fi-rr-chart-line-up" [path]="['/metrics']"/>

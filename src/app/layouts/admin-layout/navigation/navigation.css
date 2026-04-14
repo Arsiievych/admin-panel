@@ -47,33 +47,36 @@
 
 .navigation-topbar {
   display: flex;
-  justify-content: flex-end;
-  margin-bottom: 1rem;
-}
-
-.navigation-shell--collapsed .navigation-topbar {
-  justify-content: center;
+  margin-bottom: 0.95rem;
 }
 
 .navigation-collapse-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.3rem;
-  height: 2.3rem;
-  border: 1px solid rgba(145, 202, 229, 0.18);
-  border-radius: 0.75rem;
-  background: rgba(255, 255, 255, 0.04);
-  color: rgba(232, 242, 255, 0.84);
+  gap: 0.45rem;
+  width: 100%;
+  min-height: 2.2rem;
+  padding: 0.38rem 0.7rem;
+  border: 1px solid rgba(145, 202, 229, 0.2);
+  border-radius: 0.78rem;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+  color: rgba(232, 242, 255, 0.88);
   cursor: pointer;
   font: inherit;
-  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+  font-size: 0.78rem;
+  font-weight: 600;
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, transform 120ms ease;
 }
 
 .navigation-collapse-button:hover {
-  border-color: rgba(129, 214, 255, 0.28);
-  background: rgba(102, 226, 255, 0.08);
+  border-color: rgba(129, 214, 255, 0.34);
+  background: rgba(102, 226, 255, 0.12);
   color: #f3f7fe;
+}
+
+.navigation-collapse-button:active {
+  transform: translateY(1px);
 }
 
 .navigation-collapse-button:focus-visible {
@@ -82,14 +85,35 @@
 }
 
 .navigation-collapse-button .fi {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   line-height: 1;
+}
+
+.navigation-collapse-button span {
+  white-space: nowrap;
 }
 
 .navigation-shell--collapsed {
   --nav-content-inline: 0.72rem;
   width: var(--nav-width-collapsed);
   padding-inline: 0.65rem;
+}
+
+
+
+.navigation-shell--collapsed .navigation-topbar {
+  justify-content: center;
+}
+
+.navigation-shell--collapsed .navigation-collapse-button {
+  width: 100%;
+  min-height: 2.1rem;
+  padding: 0.36rem 0.55rem;
+  border-radius: 0.68rem;
+}
+
+.navigation-shell--collapsed .navigation-collapse-button span {
+  display: none;
 }
 
 @media (max-width: 900px) {
