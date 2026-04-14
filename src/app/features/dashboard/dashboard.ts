@@ -781,6 +781,10 @@ export class Dashboard implements OnInit, OnDestroy {
       return `Ends ${this.formatShortDateTime(event.current_session.end_at, timezone)}`;
     }
 
+    if (event.next_session?.start_at && event.next_session?.end_at) {
+      return `Next session: ${this.formatShortDateTime(event.next_session.start_at, timezone)} - ${this.formatShortDateTime(event.next_session.end_at, timezone)}`;
+    }
+
     if (event.next_session?.start_at) {
       return `Next session: ${this.formatShortDateTime(event.next_session.start_at, timezone)}`;
     }
